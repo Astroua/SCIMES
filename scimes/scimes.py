@@ -324,7 +324,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
     # calculate them    
 
     if user_scalpars == None:
-        scpars = np.zeros(len(criteria))
+        scpars = np.zeros(max(criteria)+1)
     else:
         scpars = user_scalpars
         
