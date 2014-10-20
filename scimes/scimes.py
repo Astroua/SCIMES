@@ -369,7 +369,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
                 
         for ks in range(min_ks,max_ks):
                                         
-            all_clusters, evecs, _, _ = spectral_clustering(AM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
+            all_clusters, evecs = spectral_clustering(AM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
 
             sil = metrics.silhouette_score(evecs, np.asarray(all_clusters), metric='euclidean')
             sils.append(sil)
@@ -378,7 +378,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
         best_ks = sils.index(max(sils))+min_ks
         print "-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks
 
-        all_clusters, evecs, _, _ = spectral_clustering(AM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
+        all_clusters, evecs = spectral_clustering(AM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
                         
     else:
 
