@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
+from astropy.stats import median_absolute_deviation as mad
 
 from sklearn import metrics
 from sklearn.cluster import spectral_clustering
@@ -19,12 +20,12 @@ from pdb import set_trace as stop
 
 
 
-def mat_smooth(Mat):
+def mat_smooth(Mat, scalpar = 0):
     
     #Evaluate sigma
 
     nonmax = Mat != Mat.max()
-    M = Mat[nonmax]
+    M = Mat#[nonmax]
 
     Mlin = np.sort(M.ravel())
     Mdiff = np.ediff1d(Mlin)
@@ -32,27 +33,24 @@ def mat_smooth(Mat):
     Mup = [0]+Mdiff.tolist()
     Mdn = Mdiff.tolist()+[0]
 
-    ind_up = np.argsort(Mup)[::-1]
-    ind_dn = np.argsort(Mdn)[::-1]
+    if scalpar == 0:
+    
+        Mdiff0 = Mdiff[Mdiff != 0]
 
-    # Search for the highest distance
-    # between the values
-    Mlsup = Mlin[ind_up]
-    Mlsdn = Mlin[ind_dn]
+        # Find outliers
+        outls = Mdiff0[Mdiff0 > np.mean(Mdiff0)+4*np.std(Mdiff0)]
+        sd_dist = (Mlin[Mup.index(outls[0])]+Mlin[Mdn.index(outls[0])])/2
+    
+        print "-- Estimated scaling parameter =", sd_dist
 
-    # Take the lower value larger distance
-    Mlsup_sel = np.sort(Mlsup[0:5])
-    Mlsdn_sel = np.sort(Mlsdn[0:5])
-        
-    sd_dist = (Mlsup[0]+Mlsdn[0])/2.
+    else:
 
-    print "-- Estimated smoothing parameter =", sd_dist
-        
+        print "-- Using provided scaling parameter =", scalpar
+        sd_dist = scalpar
+            
     NM = np.exp(-(Mat**2)/(sd_dist**2))
     NM[range(NM.shape[0]), range(NM.shape[1])] = 0
 
-    stop()
-            
     return NM
     
 
@@ -68,7 +66,6 @@ def aff_matrix(allleavidx, dictparents, dictprops):
 
     volumes = dictprops['volumes']
     luminosities = dictprops['luminosities']
-
     
     # Let's save one for loop
     n2 = num**2
@@ -99,10 +96,10 @@ def aff_matrix(allleavidx, dictparents, dictprops):
 
             # Finding the common parents
             aux_commons = list(set(ipars).intersection(set(jpars)))
+
             commons = [x for x in lpars if x in aux_commons]
-                
             pi_idx = commons[0]
-                                        
+                            
             # Volume
             wij = volumes[pi_idx]
             WAs[0,imat,jmat] = wij
@@ -112,7 +109,6 @@ def aff_matrix(allleavidx, dictparents, dictprops):
             wij = luminosities[pi_idx]
             WAs[1,imat,jmat] = wij
             WAs[1,jmat,imat] = wij
-
             
     return WAs
 
@@ -155,22 +151,36 @@ def guessk(Mat, thresh = 0.2):
 
 
 
+def get_idx(struct):
+
+    leav_list_idx = []
+    sort_leav = struct.sorted_leaves()
+
+    for l in sort_leav:
+        leav_list_idx.append(l.idx)
+    
+    return leav_list_idx
+
+
+
+
 def clust_cleaning(dendro, allleavidx, allclusters, t_brs_idx):
 
 
     # Find the lowest level parent common for all clusters
     # to get the cores_idx
     pars_lev = []
+    pars_idx = []
 
     for leaf in allleavidx:
-        pars_lev.append(dendro[leaf].parent.level)
-
+        pars_lev.append(dendro[leaf].parent.height)
+        pars_idx.append(dendro[leaf].parent.idx)
+        
     pars_lev = np.asarray(pars_lev)
+    pars_idx = np.asarray(pars_idx)
     allclusters = np.asarray(allclusters)
         
     cores_idx = []
-    doubt_idx = []
-    doubt_clust = []
       
     for cluster in set(allclusters):
 
@@ -180,59 +190,70 @@ def clust_cleaning(dendro, allleavidx, allclusters, t_brs_idx):
         # Leaves in that cluster
         clust_leaves_idx = np.asarray(allleavidx)[clust_idx] 
         
-        # Height of leaf parents into that cluster       
+        # Height of leaf parents into that cluster
+        # the parent with the lowest height is supposed
+        # to be the parent common to all leaves
+        # and becomes the core candidate
+        clust_pars_idx = np.asarray(pars_idx[clust_idx])       
         clust_pars_lev = pars_lev[clust_idx] 
-        clust_pars_lev = np.sort(clust_pars_lev)
-        clust_pars_lev = clust_pars_lev.tolist()
+        clust_pars_lev = np.argsort(clust_pars_lev)
 
-        index = clust_pars_lev.index(clust_pars_lev[0])
-        clust_leaves_idx = clust_leaves_idx.tolist()
-
-        t_brs_idx = np.asarray(t_brs_idx)
+        ord_pars_idx = clust_pars_idx[clust_pars_lev]
+        ord_pars_idx = ord_pars_idx.tolist()
         
-        # To avoid "two leaves" branches as cores
-        if len(dendro[clust_leaves_idx[index]].parent.sorted_leaves()) >= len(clust_leaves_idx) \
-          or t_brs_idx[t_brs_idx == dendro[clust_leaves_idx[index]].parent.idx].size > 0:         
-            core_candidate = dendro[clust_leaves_idx[index]].parent
-        else:
-            core_candidate = dendro[clust_leaves_idx[index]].parent.parent
-            
-                
+        t_brs_idx = np.asarray(t_brs_idx)
+        core_candidate = dendro[ord_pars_idx[0]]
+        
+                                 
         # Checking cluster cores.
         # A cluster core is a branch that contains only
         # leaves of that given core. Otherwise move to the upper level
         # and check again.
 
-        size_core_candidate = len(core_candidate.sorted_leaves())
-        size_cluster = len(clust_leaves_idx)
         
-        count = 0
-        while size_core_candidate > size_cluster:
+        # First check if the core candidate contains all leaves of the
+        # cluster, otherwise go one level down        
+                    
+        leav_core = get_idx(core_candidate)
+        leav_cluster = clust_leaves_idx
 
-            if count >= len(clust_pars_lev)-1:
+
+        fst_check = list(set(leav_cluster) - set(leav_core))
+
+        if len(fst_check)>0 and \
+          t_brs_idx[t_brs_idx == core_candidate.idx].size == 0:
+            core_candidate = core_candidate.parent
+            leav_core = get_idx(core_candidate)
+            
+                
+        # Difference between the two lists: leaves that
+        # are in the core but not in the cluster
+        diff_leav = list(set(leav_core) - set(leav_cluster))
+
+        count = 1
+        while len(diff_leav) > 0:
+
+            core_candidate = dendro[leav_cluster[count]].parent
+            leav_core = get_idx(core_candidate)
+            new_cluster = leav_cluster[count:-1]            
+
+            if len(new_cluster) == 0:
                 print 'Unassignable cluster', cluster
                 break
-
-            index = clust_pars_lev.index(clust_pars_lev[count+1])
-            core_candidate = dendro[clust_leaves_idx[index]].parent
-                
-            size_core_candidate = len(core_candidate.sorted_leaves())
-                        
-            count = count + 1
+                    
+            diff_leav = list(set(leav_core) - set(new_cluster))
+            count = count+1
 
         else:
             cores_idx.append(core_candidate.idx)
-
 
     return cores_idx        
 
 
 
-def cloudstering(dendrogram, catalog, criteria, user_k):    
 
-    # Listing all branches at dendrogram's trunk
-    # and get useful information
-    
+def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars):    
+
     trunk = dendrogram.trunk
     
     branches = []
@@ -275,10 +296,8 @@ def cloudstering(dendrogram, catalog, criteria, user_k):
                         
     dict_parents = dict(zip(all_leav_names,all_parents))
 
-
-                
     # Retriving needed properties from the catalog
-    volumes = np.pi*catalog['radius_pc'].data**2*catalog['sigv_kms'].data
+    volumes = catalog['volume'].data
     luminosities = catalog['luminosity'].data
 
     t_volume = sum(volumes[trunk_brs_idx])
@@ -289,15 +308,28 @@ def cloudstering(dendrogram, catalog, criteria, user_k):
 
     volumes.append(t_volume)
     luminosities.append(t_luminosity)
-
-
+    
     dict_props = {'volumes':volumes, 'luminosities':luminosities}
     
 
-    # Generating affinity matrices
-    AMs = aff_matrix(all_leav_idx, dict_parents, dict_props)
+    # Generating affinity matrices if not provided
+    if user_ams == None:
+        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props)
+    else:
+        AMs = user_ams
+        
+    
+    # Check whether the affinity matrix scaling parameter
+    # are provided by the user, if so use them, otherwise
+    # calculate them    
 
-
+    if user_scalpars == None:
+        scpars = np.zeros(len(criteria))
+    else:
+        scpars = user_scalpars
+        
+        
+        
     print "- Start spectral clustering"
 
     # Selecting the criteria and merging the matrices    
@@ -306,9 +338,9 @@ def cloudstering(dendrogram, catalog, criteria, user_k):
         print "-- Smoothing ", cr, " matrix"
         
         if criteria.index(cr) == 0:
-            AM = mat_smooth(AMs[cr,:,:])                
+            AM = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr])                
         else:
-            AM = AM*mat_smooth(AMs[cr,:,:])
+            AM = AM*mat_smooth(AMs[cr,:,:], scalpar = scpars[cr])
 
             
     # Showing the final affinity matrix
@@ -352,11 +384,10 @@ def cloudstering(dendrogram, catalog, criteria, user_k):
 
         print '-- Not necessary to cluster'
         all_clusters = np.zeros(len(leaves), dtype = np.int32)
-    
-    
+                
     clust_branches = clust_cleaning(dendrogram, all_leav_idx, all_clusters, trunk_brs_idx)
 
-    return clust_branches
+    return clust_branches, AMs 
 
 
     
@@ -387,22 +418,38 @@ class SpectralCloudstering:
     it will be guessed automatically through the eigenvalues
     of the unsmoothed affinity matrix
 
+    user_ams: numpy array
+    User provided affinity matrix. Whether this is not
+    furnish it is automatically generated through the
+    volume and/or luminosity criteria
+
+    user_scalpars: float
+    User defined scaling parameter(s). Whether those are not
+    furnish scaling parameters are automatically estimated. 
+
+
     Return
     -------
 
     clusters: list
     The dendrogram branch indexes corresponding to the
-    identified clusters 
+    identified clusters
+
+    affmats: numpy array
+    The affinity matrices calculated by the algorithm
         
     """
 
-    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, user_k = None):
+    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, \
+                 user_k = None, user_ams = None, user_scalpars = None):
 
         self.dendrogram = dendrogram
         self.catalog = catalog
         self.cl_volume = cl_volume
         self.cl_luminosity = cl_luminosity
         self.user_k = user_k or 0
+        self.user_ams = user_ams
+        self.user_scalpars = user_scalpars
 
         # Clustering criteria chosen
         self.criteria = []
@@ -412,4 +459,5 @@ class SpectralCloudstering:
             self.criteria.append(1)
 
         
-        self.clusters = cloudstering(self.dendrogram, self.catalog, self.criteria, self.user_k)
+        self.clusters, self.affmats = cloudstering(self.dendrogram, self.catalog, self.criteria, \
+                                                   self.user_k, self.user_ams, self.user_scalpars)
