@@ -253,9 +253,6 @@ if do_catalog:
     os.system('rm -rf '+filename+'_catalog.fits')
     cat.write(filename+'_catalog.fits')
 
-# Added by Adam Oct 14 - may be wrong
-#d=data
-
 # Calling the clustering procedure
 gmcs = SpectralCloudstering(d, cat)
 
