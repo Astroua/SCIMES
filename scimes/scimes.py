@@ -11,7 +11,7 @@ from astropy import units as u
 from astropy.stats import median_absolute_deviation as mad
 
 from sklearn import metrics
-from sklearn.cluster import spectral_clustering
+from spectral import spectral_clustering
 from skimage.measure import regionprops
 
 from datetime import datetime
