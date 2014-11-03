@@ -46,7 +46,7 @@ def showdendro( dendro, cores_idx):
 
         col = '#%02X%02X%02X' % (r(),r(),r())
         cols.append(col)
-        p.plot_tree(ax, structure=cores_idx[i], color=cols[i], lw=3)
+        p.plot_tree(ax, structure=dendro[cores_idx[i]], color=cols[i], lw=3)
 
     ax.set_title("Final clustering configuration")
 
