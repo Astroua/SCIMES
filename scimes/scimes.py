@@ -22,35 +22,24 @@ from pdb import set_trace as stop
 
 def mat_smooth(Mat, scalpar = 0):
     
-    #Evaluate sigma
-
-    nonmax = Mat != Mat.max()
-    M = Mat#[nonmax]
-
-    Mlin = np.sort(M.ravel())
-    Mdiff = np.ediff1d(Mlin)
-
-    Mup = [0]+Mdiff.tolist()
-    Mdn = Mdiff.tolist()+[0]
-
+    #Using local scaling
+    
     if scalpar == 0:
-    
-        Mdiff0 = Mdiff[Mdiff != 0]
 
-        # Find outliers
-        outls = Mdiff0[Mdiff0 > np.mean(Mdiff0)+4*np.std(Mdiff0)]
-        sd_dist = (Mlin[Mup.index(outls[0])]+Mlin[Mdn.index(outls[0])])/2
-    
-        print "-- Estimated scaling parameter =", sd_dist
+        print "-- Local scaling"
 
+        dr = np.std(Mat, axis=0)
+        sigmar = np.tile(dr,(Mat.shape[0],1))
+        sigmas = sigmar*sigmar.T                
+        
     else:
 
         print "-- Using provided scaling parameter =", scalpar
-        sd_dist = scalpar
+        sigmas = scalpar**2
             
-    NM = np.exp(-(Mat**2)/(sd_dist**2))
+    NM = np.exp(-(Mat**2)/sigmas)
     NM[range(NM.shape[0]), range(NM.shape[1])] = 0
-
+            
     return NM
     
 
@@ -83,7 +72,7 @@ def aff_matrix(allleavidx, dictparents, dictprops):
         i_idx = allleavidx[icont]
         imat = allleavidx.index(i_idx)
         
-        if icont != jcont:
+        if icont > jcont:
                 
             j_idx = allleavidx[jcont]
             jmat = allleavidx.index(j_idx)
@@ -119,33 +108,24 @@ def guessk(Mat, thresh = 0.2):
     M = 1*Mat
     M[M < thresh] = 0
     M[M > 0] = 1
-    
+    np.fill_diagonal(M, 1)
+        
     guess_clusters = np.zeros(M.shape[0])
 
     for i in range(M.shape[0]):
         guess_clusters[i] = sum(M[i,:])
 
-    nguess_clusters = []
-    trash_clusts = 0
-    currn = 0
-    
-    for i in range(len(guess_clusters)-1):
+    kguess = 1
+    i = 0
 
-        curr = guess_clusters[i]
-        
-        if curr == guess_clusters[i+1]:
-            currn = currn+1
-        else:
+    while i < len(guess_clusters)-1:
 
-            if curr == 1:
-                trash_clusts = trash_clusts+1
-            
-            currn = currn+1
-            nguess_clusters.append(currn)
-            currn = 0
-        
-    
-    kguess = len(nguess_clusters)-trash_clusts+1
+        curr = int(guess_clusters[i])
+
+        if curr != 1:
+            kguess = kguess+1
+
+        i = i + curr
     
     return kguess
 
@@ -164,21 +144,7 @@ def get_idx(struct):
 
 
 
-def clust_cleaning(dendro, allleavidx, allclusters, t_brs_idx):
-
-
-    # Find the lowest level parent common for all clusters
-    # to get the cores_idx
-    pars_lev = []
-    pars_idx = []
-
-    for leaf in allleavidx:
-        pars_lev.append(dendro[leaf].parent.height)
-        pars_idx.append(dendro[leaf].parent.idx)
-        
-    pars_lev = np.asarray(pars_lev)
-    pars_idx = np.asarray(pars_idx)
-    allclusters = np.asarray(allclusters)
+def clust_cleaning(dendro, allleavidx, allclusters, dictpars, dictchilds):
         
     cores_idx = []
       
@@ -187,66 +153,63 @@ def clust_cleaning(dendro, allleavidx, allclusters, t_brs_idx):
         # Selecting the cluster
         clust_idx = allclusters == cluster
 
-        # Leaves in that cluster
-        clust_leaves_idx = np.asarray(allleavidx)[clust_idx] 
+        # Leaves and levels in that cluster
+        clust_leaves_idx = np.asarray(allleavidx)[clust_idx]
+
+        all_par_list = []
         
-        # Height of leaf parents into that cluster
-        # the parent with the lowest height is supposed
-        # to be the parent common to all leaves
-        # and becomes the core candidate
-        clust_pars_idx = np.asarray(pars_idx[clust_idx])       
-        clust_pars_lev = pars_lev[clust_idx] 
-        clust_pars_lev = np.argsort(clust_pars_lev)
+        for cli in clust_leaves_idx:
 
-        ord_pars_idx = clust_pars_idx[clust_pars_lev]
-        ord_pars_idx = ord_pars_idx.tolist()
+            par_list = dictpars[str(cli)]
+            par_list = par_list[0:-1] #The lowest, the trunk, is not considered
+
+            all_par_list = all_par_list + par_list
+
+        all_par_list = list(set(all_par_list))
         
-        t_brs_idx = np.asarray(t_brs_idx)
-        core_candidate = dendro[ord_pars_idx[0]]
+        core_clust_num = []
+        clust_core_num = []
         
-                                 
-        # Checking cluster cores.
-        # A cluster core is a branch that contains only
-        # leaves of that given core. Otherwise move to the upper level
-        # and check again.
-
-        
-        # First check if the core candidate contains all leaves of the
-        # cluster, otherwise go one level down        
-                    
-        leav_core = get_idx(core_candidate)
-        leav_cluster = clust_leaves_idx
-
-
-        fst_check = list(set(leav_cluster) - set(leav_core))
-
-        if len(fst_check)>0 and \
-          t_brs_idx[t_brs_idx == core_candidate.idx].size == 0:
-            core_candidate = core_candidate.parent
-            leav_core = get_idx(core_candidate)
+        for i in range(len(all_par_list)):
             
-                
-        # Difference between the two lists: leaves that
-        # are in the core but not in the cluster
-        diff_leav = list(set(leav_core) - set(leav_cluster))
+            sel_par = all_par_list[i]
+            core_leaves_idx = dictchilds[str(sel_par)]
 
-        count = 1
-        while len(diff_leav) > 0:
+            # Leaves in the core but not in the cluster
+            core_clust = list(set(core_leaves_idx) - set(clust_leaves_idx))
+            core_clust_num.append(len(core_clust))
 
-            core_candidate = dendro[leav_cluster[count]].parent
-            leav_core = get_idx(core_candidate)
-            new_cluster = leav_cluster[count:-1]            
+            # Leaves in the cluster but not in the core            
+            clust_core = list(set(clust_leaves_idx) & set(core_leaves_idx))
+            clust_core_num.append(len(clust_core))
 
-            if len(new_cluster) == 0:
-                print 'Unassignable cluster', cluster
-                break
-                    
-            diff_leav = list(set(leav_core) - set(new_cluster))
-            count = count+1
+        # The selected core must not contain other leaves than
+        # those of the cluster, plus it is the one with the highest
+        # number of cluster leaves contained    
 
+        core_clust_num = np.asarray(core_clust_num)
+        core_clust_num0 = np.where(core_clust_num == 0)
+        
+        if len(core_clust_num0[0]) > 0:
+        
+            all_par_list = np.asarray(all_par_list)
+            all_par_list0 = all_par_list[core_clust_num0]
+            all_par_list0 = np.asarray(all_par_list0)
+            
+            clust_core_num = np.asarray(clust_core_num)
+            clust_core_num0 = clust_core_num[core_clust_num0]
+            clust_core_num0 = np.asarray(clust_core_num0)
+            
+            max_num = max(clust_core_num0)
+            cores = all_par_list0[np.where(clust_core_num0 == max_num)]           
+
+            cores_idx = cores_idx + cores.tolist()
+            
         else:
-            cores_idx.append(core_candidate.idx)
 
+            print "Unassignable cluster ", cluster
+            #stop()
+            
     return cores_idx        
 
 
@@ -254,48 +217,73 @@ def clust_cleaning(dendro, allleavidx, allclusters, t_brs_idx):
 
 def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars):    
 
-    trunk = dendrogram.trunk
-    
-    branches = []
-    trunk_brs_idx = []
+    # Collecting all connectivity information into more handy lists
+    all_structures_idx = range(len(catalog['radius'].data))
 
-    all_parents = []
-    all_leaves = []
     all_leav_names = []
     all_leav_idx = []
+
+    all_brc_names = []
+    all_brc_idx = []
+
+    all_parents = []
+    all_children = []
+
+    trunk_brs_idx = []
+    two_clust_idx = []    
+    mul_leav_idx = []
     
-    for t in trunk:
+    for structure_idx in all_structures_idx:
 
-        if t.is_branch:
-                    
-            branches.append(t)
-            trunk_brs_idx.append(t.idx)
+        s = dendrogram[structure_idx]
 
-            leaves = t.sorted_leaves()
+        # If structure is a leaf find all the parents
+        if s.is_leaf and s.parent != None:
 
-            for leaf in leaves:
-                
-                parents = []
-                levels = []
+            par = s.parent
+            all_leav_names.append(str(s.idx))
 
-                all_leaves.append(leaf)
-                all_leav_idx.append(leaf.idx)
-                
-                all_leav_names.append(str(leaf.idx))
-                par = leaf.parent
-
-                while par.idx != t.idx:
-
-                    parents.append(par.idx)
-                    par = par.parent
+            parents = []
             
-                parents.append(t.idx)
-                parents.append(len(catalog['radius'].data)) # This is the trunk!
-                
-                all_parents.append(parents)
-                        
-    dict_parents = dict(zip(all_leav_names,all_parents))
+            while par != None:
 
+                parents.append(par.idx)
+                par = par.parent
+                
+            parents.append(len(catalog['radius'].data)) # This is the trunk!
+            all_parents.append(parents)
+            
+            
+        # If structure is a brach find all its leaves
+        if s.is_branch:
+
+            all_brc_idx.append(s.idx)
+            all_brc_names.append(str(s.idx))
+            
+            children = []
+            
+            for leaf in s.sorted_leaves():
+
+                children.append(leaf.idx)
+                
+            all_children.append(children)
+
+            # Trunk branches
+            if s.parent == None:
+
+                trunk_brs_idx.append(s.idx)
+                all_leav_idx = all_leav_idx + children
+
+                if s.children[0].is_branch or s.children[1].is_branch:
+                    mul_leav_idx = mul_leav_idx + children
+                else:
+                    two_clust_idx.append(s.idx)
+        
+    two_clust_idx = np.unique(two_clust_idx).tolist()
+    
+    dict_parents = dict(zip(all_leav_names,all_parents))            
+    dict_children = dict(zip(all_brc_names,all_children))    
+    
     # Retriving needed properties from the catalog
     volumes = catalog['volume'].data
     luminosities = catalog['luminosity'].data
@@ -310,15 +298,14 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
     luminosities.append(t_luminosity)
     
     dict_props = {'volumes':volumes, 'luminosities':luminosities}
-    
-
+     
     # Generating affinity matrices if not provided
     if user_ams == None:
-        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props)
+        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props, dendrogram)
     else:
         AMs = user_ams
+
         
-    
     # Check whether the affinity matrix scaling parameter
     # are provided by the user, if so use them, otherwise
     # calculate them    
@@ -327,9 +314,8 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
         scpars = np.zeros(max(criteria)+1)
     else:
         scpars = user_scalpars
-        
-        
-        
+
+                
     print "- Start spectral clustering"
 
     # Selecting the criteria and merging the matrices    
@@ -348,16 +334,33 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
     plt.colorbar()
     plt.title('Final Affinity Matrix')        
 
+    
+    # Making the reduced affinity matrices
+    mul_leav_mat = []
+    for mli in mul_leav_idx:
+        mul_leav_mat.append(all_leav_idx.index(mli))
+
+    mul_leav_mat = np.asarray(mul_leav_mat)
+    rAM = AM[mul_leav_mat,:]
+    rAM = rAM[:,mul_leav_mat]
+
+    
+    # Showing the reduced affinity matrix
+    plt.matshow(rAM)
+    plt.colorbar()
+    plt.title('Reduced Affinity Matrix') 
+            
         
     # Guessing the number of clusters
     # if not provided
 
     if user_k == 0:   
-        kg = guessk(AM)
+        kg = guessk(rAM)
     else:
         kg = user_k
-            
-    print '-- Guessed number of clusters =', kg
+
+    print '-- Reduced matrix number of clusters =', kg                    
+    print '-- Total guessed number of clusters =', kg+len(two_clust_idx)
     
     if kg > 1:
 
@@ -365,29 +368,33 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
         sils = []
 
         min_ks = max(2,kg-5)
-        max_ks = min(kg+20,len(all_leav_idx))
+        max_ks = min(kg+20,len(all_leav_idx)-len(two_clust_idx)-1)
                 
         for ks in range(min_ks,max_ks):
                                         
-            all_clusters, evecs = spectral_clustering(AM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
+            all_clusters, evecs, _, _ = spectral_clustering(rAM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
 
             sil = metrics.silhouette_score(evecs, np.asarray(all_clusters), metric='euclidean')
             sils.append(sil)
                     
         # Use the best cluster number to generate clusters                    
         best_ks = sils.index(max(sils))+min_ks
-        print "-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks
+        print "-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks+len(two_clust_idx)
 
-        all_clusters, evecs = spectral_clustering(AM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
+        all_clusters, evecs, _, _ = spectral_clustering(rAM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
                         
     else:
 
         print '-- Not necessary to cluster'
         all_clusters = np.zeros(len(leaves), dtype = np.int32)
-                
-    clust_branches = clust_cleaning(dendrogram, all_leav_idx, all_clusters, trunk_brs_idx)
 
-    return clust_branches, AMs 
+                    
+    clust_branches = clust_cleaning(dendrogram, mul_leav_idx, all_clusters, dict_parents, dict_children)
+    clust_branches = clust_branches + two_clust_idx
+
+    print "-- Final cluster number (after cleaning)", len(clust_branches)
+    
+    return clust_branches, AMs  
 
 
     
