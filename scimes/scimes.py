@@ -301,7 +301,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
      
     # Generating affinity matrices if not provided
     if user_ams == None:
-        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props, dendrogram)
+        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props)
     else:
         AMs = user_ams
 
