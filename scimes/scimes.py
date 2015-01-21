@@ -20,34 +20,53 @@ from pdb import set_trace as stop
 
 
 
-def mat_smooth(Mat, scalpar = 0):
+def mat_smooth(Mat, scalpar = 0, lscal = False):
     
-    #Using local scaling
-    
-    if scalpar == 0:
+    # Using estimated global scaling    
+    if scalpar == 0 and lscal == False:
+
+        Aff = np.unique(Mat.ravel())
+        psigmas = (Aff+np.roll(Aff,-1))/2
+            
+        psigmas = psigmas[1:-1]        
+
+        diff = np.roll(Aff,-1)-Aff                
+        diff = diff[1:-1]
+
+        sel_diff_ind = min(np.argsort(diff)[::-1][0:5])
+        sigmas = psigmas[sel_diff_ind]**2
+
+        print '-- Estimated scaling parameter:', np.sqrt(sigmas)
+
+
+    # Using local scaling        
+    if scalpar == 0 and lscal == True:
 
         print "-- Local scaling"
 
         dr = np.std(Mat, axis=0)
         sigmar = np.tile(dr,(Mat.shape[0],1))
-        sigmas = sigmar*sigmar.T                
-        
-    else:
+        sigmas = sigmar*sigmar.T
 
-        print "-- Using provided scaling parameter =", scalpar
+
+    # Using user-defined scaling parameter
+    if scalpar != 0:
+
+        print "-- User defined scaling parameter:", scalpar
         sigmas = scalpar**2
+
             
     NM = np.exp(-(Mat**2)/sigmas)
     NM[range(NM.shape[0]), range(NM.shape[1])] = 0
-            
+
     return NM
     
 
 
 
 
-def aff_matrix(allleavidx, dictparents, dictprops):
-
+def aff_matrix(allleavidx, dictparents, dictprops, dendro):
+    
     print "- Creating affinity matrices"
 
     num = len(allleavidx)        
@@ -55,13 +74,19 @@ def aff_matrix(allleavidx, dictparents, dictprops):
 
     volumes = dictprops['volumes']
     luminosities = dictprops['luminosities']
-    
+
+    # Collecting affinities only for branch mergers
+    wij_vol = [] 
+    wij_lum = []
+        
     # Let's save one for loop
     n2 = num**2
     yy = np.outer(np.ones(num, dtype = np.int),range(num))
     xx = np.outer(range(num),np.ones(num, dtype = np.int))
     yy = yy.reshape(n2)
     xx = xx.reshape(n2)                
+
+    tr_idx = len(volumes)-1
         
     # Going through the branch
     for lp in range(len(xx)):
@@ -88,18 +113,20 @@ def aff_matrix(allleavidx, dictparents, dictprops):
 
             commons = [x for x in lpars if x in aux_commons]
             pi_idx = commons[0]
+                                    
                             
             # Volume
             wij = volumes[pi_idx]
             WAs[0,imat,jmat] = wij
             WAs[0,jmat,imat] = wij
-
+            
             # Luminosity
             wij = luminosities[pi_idx]
             WAs[1,imat,jmat] = wij
             WAs[1,jmat,imat] = wij
-            
+              
     return WAs
+
 
 
 
@@ -128,18 +155,6 @@ def guessk(Mat, thresh = 0.2):
         i = i + curr
     
     return kguess
-
-
-
-def get_idx(struct):
-
-    leav_list_idx = []
-    sort_leav = struct.sorted_leaves()
-
-    for l in sort_leav:
-        leav_list_idx.append(l.idx)
-    
-    return leav_list_idx
 
 
 
@@ -208,14 +223,14 @@ def clust_cleaning(dendro, allleavidx, allclusters, dictpars, dictchilds):
         else:
 
             print "Unassignable cluster ", cluster
-            #stop()
             
-    return cores_idx        
+    return cores_idx
 
 
 
 
-def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars):    
+
+def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars, ssingle, locscal):    
 
     # Collecting all connectivity information into more handy lists
     all_structures_idx = range(len(catalog['radius'].data))
@@ -301,7 +316,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
      
     # Generating affinity matrices if not provided
     if user_ams == None:
-        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props)
+        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props, dendrogram)
     else:
         AMs = user_ams
 
@@ -324,9 +339,9 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
         print "-- Smoothing ", cr, " matrix"
         
         if criteria.index(cr) == 0:
-            AM = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr])                
+            AM = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)                
         else:
-            AM = AM*mat_smooth(AMs[cr,:,:], scalpar = scpars[cr])
+            AM = AM*mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)
 
             
     # Showing the final affinity matrix
@@ -368,7 +383,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
         sils = []
 
         min_ks = max(2,kg-5)
-        max_ks = min(kg+20,len(all_leav_idx)-len(two_clust_idx)-1)
+        max_ks = min(kg+20,rAM.shape[0]-1)
                 
         for ks in range(min_ks,max_ks):
                                         
@@ -387,14 +402,34 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars)
 
         print '-- Not necessary to cluster'
         all_clusters = np.zeros(len(leaves), dtype = np.int32)
-
                     
     clust_branches = clust_cleaning(dendrogram, mul_leav_idx, all_clusters, dict_parents, dict_children)
-    clust_branches = clust_branches + two_clust_idx
+    clusts = clust_branches + two_clust_idx
 
-    print "-- Final cluster number (after cleaning)", len(clust_branches)
+    print "-- Final cluster number (after cleaning)", len(clusts)
+
+
+
+    # Add to the cluster list the single leaves, if required
+    if ssingle == True:
+
+        all_leaves = []
+        clust_leaves = []
+
+        for leaf in dendrogram.leaves:
+            all_leaves.append(leaf.idx)
+
+        for clust in clusts:
+            for leaf in dendrogram[clust].sorted_leaves():
+                clust_leaves.append(leaf.idx)
+
+        unclust_leaves = list(set(all_leaves)-set(clust_leaves))
+
+        clusts = clusts + unclust_leaves
+
+        print "-- Unclustered leaves added. Final cluster number", len(clusts)        
     
-    return clust_branches, AMs  
+    return clusts, AMs 
 
 
     
@@ -430,10 +465,21 @@ class SpectralCloudstering:
     furnish it is automatically generated through the
     volume and/or luminosity criteria
 
-    user_scalpars: float
-    User defined scaling parameter(s). Whether those are not
-    furnish scaling parameters are automatically estimated. 
+    user_scalpars: list of floats
+    User-provided scaling parameters to smooth the
+    affinity matrices
 
+    locscaling: bool
+    Smooth the affinity matrices using a local
+    scaling technique
+    
+    savesingles: bool
+    Consider the single, isolated leaves as
+    individual "clusters". Useful for low
+    resolution data where the beam size
+    corresponds to the size of a Giant
+    Molecular Cloud.
+    
 
     Return
     -------
@@ -448,7 +494,7 @@ class SpectralCloudstering:
     """
 
     def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, \
-                 user_k = None, user_ams = None, user_scalpars = None):
+                 user_k = None, user_ams = None, user_scalpars = None, savesingles = False, locscaling = False):
 
         self.dendrogram = dendrogram
         self.catalog = catalog
@@ -457,6 +503,8 @@ class SpectralCloudstering:
         self.user_k = user_k or 0
         self.user_ams = user_ams
         self.user_scalpars = user_scalpars
+        self.locscaling = locscaling        
+        self.savesingles = savesingles
 
         # Clustering criteria chosen
         self.criteria = []
@@ -467,4 +515,6 @@ class SpectralCloudstering:
 
         
         self.clusters, self.affmats = cloudstering(self.dendrogram, self.catalog, self.criteria, \
-                                                   self.user_k, self.user_ams, self.user_scalpars)
+                                                   self.user_k, self.user_ams, self.user_scalpars, \
+                                                   self.locscaling, self.savesingles)
+
