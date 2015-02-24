@@ -513,6 +513,13 @@ class SpectralCloudstering:
 
     affmats: numpy array
     The affinity matrices calculated by the algorithm
+    
+    escalpars: list
+    Estimated scaling parameters for the different
+    affinity matrixes
+    
+    silhouette: float
+    Silhouette of the best cluster configuration
         
     """
 
