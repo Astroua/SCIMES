@@ -6,18 +6,8 @@ import numpy as np
 
 from matplotlib import pyplot as plt
 
-from astrodendro import Dendrogram, ppv_catalog
-from astropy import units as u
-from astropy.stats import median_absolute_deviation as mad
-
-from sklearn import metrics
 from sklearn.cluster import spectral_clustering
-from skimage.measure import regionprops
-
-from datetime import datetime
-from pdb import set_trace as stop
-
-
+from itertools import combinations
 
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
@@ -25,7 +15,7 @@ def mat_smooth(Mat, scalpar = 0, lscal = False):
     # Using estimated global scaling    
     if scalpar == 0 and lscal == False:
 
-        Aff = np.unique(Mat.ravel())
+        Aff = np.unique(Mat.ravel())[1::]
         psigmas = (Aff+np.roll(Aff,-1))/2
             
         psigmas = psigmas[1:-1]        
@@ -33,11 +23,10 @@ def mat_smooth(Mat, scalpar = 0, lscal = False):
         diff = np.roll(Aff,-1)-Aff                
         diff = diff[1:-1]
 
-        sel_diff_ind = min(np.argsort(diff)[::-1][0:5])
+        sel_diff_ind = np.min(np.argsort(diff)[::-1][0:5])
         sigmas = psigmas[sel_diff_ind]**2
 
         print '-- Estimated scaling parameter:', np.sqrt(sigmas)
-
 
     # Using local scaling        
     if scalpar == 0 and lscal == True:
@@ -59,14 +48,12 @@ def mat_smooth(Mat, scalpar = 0, lscal = False):
     NM = np.exp(-(Mat**2)/sigmas)
     NM[range(NM.shape[0]), range(NM.shape[1])] = 0
 
-    return NM
+    return NM, sigmas
     
 
 
+def aff_matrix(allleavidx, alllevels, dictparents, dictprops):
 
-
-def aff_matrix(allleavidx, dictparents, dictprops, dendro):
-    
     print "- Creating affinity matrices"
 
     num = len(allleavidx)        
@@ -74,57 +61,44 @@ def aff_matrix(allleavidx, dictparents, dictprops, dendro):
 
     volumes = dictprops['volumes']
     luminosities = dictprops['luminosities']
-
-    # Collecting affinities only for branch mergers
-    wij_vol = [] 
-    wij_lum = []
         
     # Let's save one for loop
-    n2 = num**2
-    yy = np.outer(np.ones(num, dtype = np.int),range(num))
-    xx = np.outer(range(num),np.ones(num, dtype = np.int))
-    yy = yy.reshape(n2)
-    xx = xx.reshape(n2)                
-
-    tr_idx = len(volumes)-1
-        
+    combs = list(combinations(xrange(num), 2))
+    ncombs = len(combs)
+    
     # Going through the branch
-    for lp in range(len(xx)):
+    for i in range(ncombs):
 
-        icont = xx[lp]
-        jcont = yy[lp]
+        icont = combs[i][0]
+        jcont = combs[i][1]
             
         i_idx = allleavidx[icont]
         imat = allleavidx.index(i_idx)
-        
-        if icont > jcont:
                 
-            j_idx = allleavidx[jcont]
-            jmat = allleavidx.index(j_idx)
+        j_idx = allleavidx[jcont]
+        jmat = allleavidx.index(j_idx)
             
-            ipars = dictparents[str(i_idx)]
-            jpars = dictparents[str(j_idx)]
+        ipars = dictparents[str(i_idx)]
+        jpars = dictparents[str(j_idx)]
 
-            # Find shorter list for the comparison
-            lpars = min(ipars,jpars)
+        # Find shorter list for the comparison
+        lpars = min(ipars,jpars)
 
-            # Finding the common parents
-            aux_commons = list(set(ipars).intersection(set(jpars)))
+        # Finding the common parents
+        aux_commons = np.asarray(list(set(ipars).intersection(set(jpars))))
+        plevels = alllevels[aux_commons]
+        pi_idx = aux_commons[plevels == max(plevels)][0]
 
-            commons = [x for x in lpars if x in aux_commons]
-            pi_idx = commons[0]
-                                    
-                            
-            # Volume
-            wij = volumes[pi_idx]
-            WAs[0,imat,jmat] = wij
-            WAs[0,jmat,imat] = wij
-            
-            # Luminosity
-            wij = luminosities[pi_idx]
-            WAs[1,imat,jmat] = wij
-            WAs[1,jmat,imat] = wij
-              
+        # Volume
+        wij = volumes[pi_idx]
+        WAs[0,imat,jmat] = wij
+        WAs[0,jmat,imat] = wij
+        
+        # Luminosity
+        wij = luminosities[pi_idx]
+        WAs[1,imat,jmat] = wij
+        WAs[1,jmat,imat] = wij
+
     return WAs
 
 
@@ -135,8 +109,9 @@ def guessk(Mat, thresh = 0.2):
     M = 1*Mat
     M[M < thresh] = 0
     M[M > 0] = 1
+
+
     np.fill_diagonal(M, 1)
-        
     guess_clusters = np.zeros(M.shape[0])
 
     for i in range(M.shape[0]):
@@ -153,13 +128,27 @@ def guessk(Mat, thresh = 0.2):
             kguess = kguess+1
 
         i = i + curr
-    
+
+    """
+    np.fill_diagonal(M, 0)
+    D = np.zeros(M.shape)
+
+    for i in range(D.shape[0]):
+        D[i,i] = sum(M[i,:])
+
+    Lap = D - M
+    eigv = np.abs(np.linalg.eigvals(Lap))
+
+    kguess2 = len(np.where(eigv == 0)[0])    
+
+    """
+            
     return kguess
 
 
 
 
-def clust_cleaning(dendro, allleavidx, allclusters, dictpars, dictchilds):
+def clust_cleaning(allleavidx, allclusters, dictpars, dictchilds):
         
     cores_idx = []
       
@@ -230,10 +219,12 @@ def clust_cleaning(dendro, allleavidx, allclusters, dictpars, dictchilds):
 
 
 
-def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars, ssingle, locscal):    
+def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars, ssingle, locscal, blind):    
 
     # Collecting all connectivity information into more handy lists
     all_structures_idx = range(len(catalog['radius'].data))
+
+    all_levels = []
 
     all_leav_names = []
     all_leav_idx = []
@@ -251,6 +242,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     for structure_idx in all_structures_idx:
 
         s = dendrogram[structure_idx]
+        all_levels.append(s.level)
 
         # If structure is a leaf find all the parents
         if s.is_leaf and s.parent != None:
@@ -299,6 +291,9 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     dict_parents = dict(zip(all_leav_names,all_parents))            
     dict_children = dict(zip(all_brc_names,all_children))    
     
+    all_levels.append(-1)
+    all_levels = np.asarray(all_levels)
+
     # Retriving needed properties from the catalog
     volumes = catalog['volume'].data
     luminosities = catalog['luminosity'].data
@@ -316,11 +311,26 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
      
     # Generating affinity matrices if not provided
     if user_ams == None:
-        AMs = aff_matrix(all_leav_idx, dict_parents, dict_props, dendrogram)
+        AMs = aff_matrix(all_leav_idx, all_levels, dict_parents, dict_props)
     else:
         AMs = user_ams
 
+
+    # Check if the affinity matrix has more than 2 elements
+    # otherwise return everything as clusters ("savesingles").
+    if AMs.shape[1] <= 2:
+
+        print '--- Not necessary to cluster. "savesingles" keyword triggered.'
+
+        all_leaves = []
+        for leaf in dendrogram.leaves:
+            all_leaves.append(leaf.idx)
+
+        clusts = all_leaves
+
+        return clusts, AMs
         
+                
     # Check whether the affinity matrix scaling parameter
     # are provided by the user, if so use them, otherwise
     # calculate them    
@@ -334,21 +344,19 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     print "- Start spectral clustering"
 
     # Selecting the criteria and merging the matrices    
+    escalpars = []
     for cr in criteria:
 
         print "-- Smoothing ", cr, " matrix"
         
         if criteria.index(cr) == 0:
-            AM = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)                
+            AM, sigma = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)
+            escalpars.append(sigma)                
         else:
-            AM = AM*mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)
-
+            AMc, sigma = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)
+            AM = AM*AMc
+            escalpars.append(sigma)
             
-    # Showing the final affinity matrix
-    plt.matshow(AM)
-    plt.colorbar()
-    plt.title('Final Affinity Matrix')        
-
     
     # Making the reduced affinity matrices
     mul_leav_mat = []
@@ -359,20 +367,26 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     rAM = AM[mul_leav_mat,:]
     rAM = rAM[:,mul_leav_mat]
 
+    if blind == False:
     
-    # Showing the reduced affinity matrix
-    plt.matshow(rAM)
-    plt.colorbar()
-    plt.title('Reduced Affinity Matrix') 
+        # Showing the reduced affinity matrix
+        plt.matshow(rAM)
+        plt.colorbar()
+        plt.title('Reduced Affinity Matrix') 
             
-        
+        # Showing the final affinity matrix
+        plt.matshow(AM)
+        plt.colorbar()
+        plt.title('Final Affinity Matrix')
+    
+      
     # Guessing the number of clusters
     # if not provided
 
     if user_k == 0:   
         kg = guessk(rAM)
     else:
-        kg = user_k
+        kg = user_k-len(two_clust_idx)
 
     print '-- Reduced matrix number of clusters =', kg                    
     print '-- Total guessed number of clusters =', kg+len(two_clust_idx)
@@ -382,33 +396,42 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
         # Find the best cluster number
         sils = []
 
-        min_ks = max(2,kg-5)
-        max_ks = min(kg+20,rAM.shape[0]-1)
+        min_ks = max(2,kg-15)
+        max_ks = min(kg+15,rAM.shape[0]-1)
                 
         for ks in range(min_ks,max_ks):
-                                        
-            all_clusters, evecs, _, _ = spectral_clustering(rAM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
 
-            sil = metrics.silhouette_score(evecs, np.asarray(all_clusters), metric='euclidean')
+            try:
+                     
+                all_clusters, evecs = spectral_clustering(rAM, n_clusters=ks, assign_labels = 'kmeans', eigen_solver='arpack')
+                sil = metrics.silhouette_score(evecs, np.asarray(all_clusters), metric='euclidean')
+
+            except np.linalg.LinAlgError:
+
+                sil = 0
+                
             sils.append(sil)
                     
         # Use the best cluster number to generate clusters                    
         best_ks = sils.index(max(sils))+min_ks
         print "-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks+len(two_clust_idx)
-
-        all_clusters, evecs, _, _ = spectral_clustering(rAM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
+        silhoutte = max(sils)
+        
+        all_clusters, evecs = spectral_clustering(rAM, n_clusters=best_ks, assign_labels = 'kmeans', eigen_solver='arpack')
                         
     else:
 
         print '-- Not necessary to cluster'
-        all_clusters = np.zeros(len(leaves), dtype = np.int32)
-                    
-    clust_branches = clust_cleaning(dendrogram, mul_leav_idx, all_clusters, dict_parents, dict_children)
+        all_clusters = np.zeros(len(all_leaves_idx), dtype = np.int32)
+        
+
+    clust_branches = clust_cleaning(mul_leav_idx, all_clusters, dict_parents, dict_children)
     clusts = clust_branches + two_clust_idx
 
     print "-- Final cluster number (after cleaning)", len(clusts)
+    
 
-
+    
 
     # Add to the cluster list the single leaves, if required
     if ssingle == True:
@@ -429,7 +452,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
 
         print "-- Unclustered leaves added. Final cluster number", len(clusts)        
     
-    return clusts, AMs 
+    return clusts, AMs, escalpars, silhoutte 
 
 
     
@@ -494,7 +517,8 @@ class SpectralCloudstering:
     """
 
     def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, \
-                 user_k = None, user_ams = None, user_scalpars = None, savesingles = False, locscaling = False):
+                 user_k = None, user_ams = None, user_scalpars = None, \
+                 savesingles = False, locscaling = False, blind = False):
 
         self.dendrogram = dendrogram
         self.catalog = catalog
@@ -505,6 +529,7 @@ class SpectralCloudstering:
         self.user_scalpars = user_scalpars
         self.locscaling = locscaling        
         self.savesingles = savesingles
+        self.blind = blind
 
         # Clustering criteria chosen
         self.criteria = []
@@ -514,7 +539,6 @@ class SpectralCloudstering:
             self.criteria.append(1)
 
         
-        self.clusters, self.affmats = cloudstering(self.dendrogram, self.catalog, self.criteria, \
+        self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram, self.catalog, self.criteria, \
                                                    self.user_k, self.user_ams, self.user_scalpars, \
-                                                   self.locscaling, self.savesingles)
-
+                                                   self.savesingles, self.locscaling, self.blind)
