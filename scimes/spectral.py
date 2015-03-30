@@ -9,13 +9,13 @@ import warnings
 
 import numpy as np
 
-from ..base import BaseEstimator, ClusterMixin
-from ..utils import check_random_state, as_float_array, deprecated
-from ..utils.extmath import norm
-from ..metrics.pairwise import pairwise_kernels
-from ..neighbors import kneighbors_graph
-from ..manifold import spectral_embedding
-from .k_means_ import k_means
+from sklearn.base import BaseEstimator, ClusterMixin
+from sklearn.utils import check_random_state, as_float_array, deprecated
+from sklearn.utils.extmath import norm
+from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.neighbors import kneighbors_graph
+from sklearn.manifold import spectral_embedding
+from sklearn.cluster.k_means_ import k_means
 
 
 def discretize(vectors, copy=True, max_svd_restarts=30, n_iter_max=20,

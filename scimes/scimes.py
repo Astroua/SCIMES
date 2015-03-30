@@ -3,11 +3,20 @@ import os.path
 import math
 
 import numpy as np
+import itertools
+from itertools import combinations
 
 from matplotlib import pyplot as plt
 
-from sklearn.cluster import spectral_clustering
-from itertools import combinations
+from astrodendro import Dendrogram, ppv_catalog
+from astropy import units as u
+from astropy.stats import median_absolute_deviation as mad
+from astropy.table import Column
+import aplpy
+
+from sklearn import metrics
+from spectral import spectral_clustering
+from skimage.measure import regionprops
 
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
@@ -450,14 +459,14 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
 
         clusts = clusts + unclust_leaves
 
-        print "-- Unclustered leaves added. Final cluster number", len(clusts)        
+        print "-- Unclustered leaves added. Final cluster number", len(clusts)
     
     return clusts, AMs, escalpars, silhoutte 
 
 
     
     
-class SpectralCloudstering:
+class SpectralCloudstering(object):
     """
     Apply the spectral clustering to find the best 
     cloud segmentation out from a dendrogram.
@@ -466,11 +475,11 @@ class SpectralCloudstering:
     -----------
 
     dendrogram: 'astrodendro.dendrogram.Dendrogram' instance
-    The dendrogram to clusterize
+        The dendrogram to clusterize
 
     catalog: 'astropy.table.table.Table' instance
-    A catalog containing all properties of the dendrogram
-    structures. Generally generated with ppv_catalog module
+        A catalog containing all properties of the dendrogram
+        structures. Generally generated with ppv_catalog module
 
     cl_volume: bool
     Clusterize the dendrogram using the 'volume' criterium 
@@ -523,12 +532,19 @@ class SpectralCloudstering:
         
     """
 
-    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, \
-                 user_k = None, user_ams = None, user_scalpars = None, \
+    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True,
+                 user_k = None, user_ams = None, user_scalpars = None,
                  savesingles = False, locscaling = False, blind = False):
 
         self.dendrogram = dendrogram
         self.catalog = catalog
+        if 'luminosity' not in catalog.colnames:
+            print("WARNING: adding luminosity = flux to the catalog.")
+            catalog.add_column(Column(catalog['flux'], 'luminosity'))
+        if 'volume' not in catalog.colnames:
+            print("WARNING: adding volume = pi * radius^2 * v_rms to the catalog.")
+            catalog.add_column(Column(catalog['radius']**2*np.pi *
+                                      catalog['v_rms'], 'volume'))
         self.cl_volume = cl_volume
         self.cl_luminosity = cl_luminosity
         self.user_k = user_k or 0
@@ -545,7 +561,95 @@ class SpectralCloudstering:
         if self.cl_luminosity:
             self.criteria.append(1)
 
+        # default colors in case plot_connected_colors is called before showdendro
+        self.colors = itertools.cycle('rgbcmyk')
         
-        self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram, self.catalog, self.criteria, \
-                                                   self.user_k, self.user_ams, self.user_scalpars, \
+        self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram,
+                                                                                    self.catalog,
+                                                                                    self.criteria,
+                                                   self.user_k, self.user_ams, self.user_scalpars,
                                                    self.savesingles, self.locscaling, self.blind)
+
+    def showdendro(self):
+
+        dendro = self.dendro
+        cores_idx = self.clusters
+
+
+        # For the random colors
+        r = lambda: random.randint(0,255)
+                 
+        p = dendro.plotter()
+
+        fig = plt.figure(figsize=(20, 12))
+        ax = fig.add_subplot(111)
+                
+        ax.set_yscale('log')
+                
+        cols = []
+
+        
+        # Plot the whole tree
+
+        p.plot_tree(ax, color='black')
+
+        for i in range(len(cores_idx)):
+
+            col = '#%02X%02X%02X' % (r(),r(),r())
+            cols.append(col)
+            p.plot_tree(ax, structure=dendro[cores_idx[i]], color=cols[i], lw=3)
+
+        ax.set_title("Final clustering configuration")
+
+        ax.set_xlabel("Structure")
+        ax.set_ylabel("Flux")
+
+        self.colors = cols
+
+
+    def plot_connected_clusters(self, **kwargs):
+        from plotting import dendroplot_clusters
+
+        return dendroplot_clusters(self.clusters, self.dendrogram, self.catalog,
+                                   colors=self.colors,
+                                   **kwargs)
+
+    def make_assignment_cube(self, outfileprefix, header, tag = '_',
+                             collapse = True):
+        """
+        Create a label cube with only the cluster (cloudster) IDs included, and
+        write to disk.
+
+        Parameters
+        ----------
+        outfileprefix : str
+            The prefix for the output filename.  The file has a format
+            `outfileprefix+'_asgn_'+tag+'.fits'`
+        header : `fits.Header`
+            The header of the output assignment cube.  Should be the same
+            header that the dendrogram was generated from
+        tag : str
+        collapse : bool
+        """
+
+        data = self.dendrogram.data.squeeze()
+        
+        # Making the assignment cube
+        asgn = np.zeros(data.shape, dtype=np.int32)
+
+        for i in self.clusters:
+            asgn[np.where(dendro[i].get_mask(shape = asgn.shape))] = i+1
+
+
+        # Write the fits file
+        self.asgn = fits.PrimaryHDU(asgn.astype('short'), header)
+        
+        self.asgn.writeto(outfileprefix+'_asgn_'+tag+'.fits', clobber=True)
+
+        # Collapsed version of the asgn cube
+        if collapse:
+
+            asgn_map = np.amax(asgn.data, axis = 0) 
+
+            plt.matshow(asgn_map, origin = "lower")
+            plt.colorbar()

@@ -4,6 +4,9 @@ import os.path
 import numpy as np
 import math
 import aplpy
+import random
+
+from matplotlib import pyplot as plt
 
 from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
@@ -64,13 +67,13 @@ def make_asgn(dendro, data_file, cores_idx = [], tag = '_', collapse = True):
     
     # Making the assignment cube
     if len(data.shape) == 3:
-        asgn = np.zeros(data.shape, dtype = int32)
+        asgn = np.zeros(data.shape, dtype = np.int32)
 
     if len(data.shape) == 4:
-        asgn = np.zeros((data.shape[1],data.shape[2],data.shape[3]), dtype = int32)    
+        asgn = np.zeros((data.shape[1],data.shape[2],data.shape[3]), dtype = np.int32)    
     
     for i in cores_idx:
-        asgn[where(d[i].get_mask(shape = asgn.shape))] = i
+        asgn[np.where(d[i].get_mask(shape = asgn.shape))] = i
             
         
     # Write the fits file
@@ -85,8 +88,8 @@ def make_asgn(dendro, data_file, cores_idx = [], tag = '_', collapse = True):
 
         asgn_map = np.amax(asgn.data, axis = 0) 
 
-        matshow(asgn_map, origin = "lower")
-        colorbar()
+        plt.matshow(asgn_map, origin = "lower")
+        plt.colorbar()
         
             
     return
@@ -95,13 +98,14 @@ def make_asgn(dendro, data_file, cores_idx = [], tag = '_', collapse = True):
 
 
 
-path = '/Volumes/Zeruel_data/ORION/'
+path = './'
+#path = '/Volumes/Zeruel_data/ORION/'
 #path = '/Users/Dario/Documents/dendrograms/'
-filename = path+'orion'
+filename = os.path.join(path, 'orion')
 
-do_make = False
-do_catalog = False
-do_load = False
+do_make = True
+do_catalog = True
+do_load = True
 
 
 if do_make:
@@ -115,7 +119,7 @@ if do_make:
     data = hdu.data
     hd = hdu.header
 
-    if size(shape(data))==4:
+    if data.ndim==4:
         data = data[0,:,:,:]
 
         
