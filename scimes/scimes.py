@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
 from astropy.stats import median_absolute_deviation as mad
+from astropy.table import Column
 import aplpy
 
 from sklearn import metrics
@@ -531,12 +532,19 @@ class SpectralCloudstering(object):
         
     """
 
-    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True, \
-                 user_k = None, user_ams = None, user_scalpars = None, \
+    def __init__(self, dendrogram, catalog, cl_volume = True, cl_luminosity=True,
+                 user_k = None, user_ams = None, user_scalpars = None,
                  savesingles = False, locscaling = False, blind = False):
 
         self.dendrogram = dendrogram
         self.catalog = catalog
+        if 'luminosity' not in catalog.colnames:
+            print("WARNING: adding luminosity = flux to the catalog.")
+            catalog.add_column(Column(catalog['flux'], 'luminosity'))
+        if 'volume' not in catalog.colnames:
+            print("WARNING: adding volume = pi * radius^2 * v_rms to the catalog.")
+            catalog.add_column(Column(catalog['radius']**2*np.pi *
+                                      catalog['v_rms'], 'volume'))
         self.cl_volume = cl_volume
         self.cl_luminosity = cl_luminosity
         self.user_k = user_k or 0
@@ -556,8 +564,10 @@ class SpectralCloudstering(object):
         # default colors in case plot_connected_colors is called before showdendro
         self.colors = itertools.cycle('rgbcmyk')
         
-        self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram, self.catalog, self.criteria, \
-                                                   self.user_k, self.user_ams, self.user_scalpars, \
+        self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram,
+                                                                                    self.catalog,
+                                                                                    self.criteria,
+                                                   self.user_k, self.user_ams, self.user_scalpars,
                                                    self.savesingles, self.locscaling, self.blind)
 
     def showdendro(self):
