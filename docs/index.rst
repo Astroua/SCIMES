@@ -14,5 +14,5 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   installing.rst
-   algorithm.rst
+   installation.rst
+   description.rst
