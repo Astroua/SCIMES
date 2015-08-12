@@ -7,3 +7,12 @@ Spectral Clustering for Molecular Emission Segmentation
 
 ``SCIMES`` idenfifies relevant molecular gas structures within
 dendrograms of emission using the spectral clustering paradigm
+
+Documentation
+-------------
+
+.. toctree::
+   :maxdepth: 2
+
+   installing.rst
+   algorithm.rst
