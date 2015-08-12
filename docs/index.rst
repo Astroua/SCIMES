@@ -21,36 +21,28 @@ Reporting issues and getting help
 ---------------------------------
 
 Please help us improve this package by reporting issues via `GitHub
-<https://github.com/dendrograms/astrodendro/issues>`_. You can also open an
+<https://github.com/Astroua/SCIMES/issues>`_. You can also open an
 issue if you need help with using the package.
 
 Developers
 ----------
 
-This package was developed by:
+This package is developed by:
 
-* Thomas Robitaille
-* Chris Beaumont
-* Adam Ginsburg
-* Braden MacDonald
+* Dario Colombo
 * Erik Rosolowsky
+* Adam Ginsburg
+* Ana Duarte-Cabral
+* Annie Hughes
 
-Acknowledgments
----------------
-
-Thanks to the following users for using early versions of this package and
-providing valuable feedback:
-
-* Katharine Johnston
-
-Citing astrodendro
+Citing SCIMES
 ------------------
 
 If you make use of this package in a publication, please consider adding the
 following acknowledgment:
 
-*This research made use of astrodendro, a Python package to compute dendrograms
-of Astronomical data (http://www.dendrograms.org/)*
+*This research made use of SCIMES, a Python package to find relevant structures
+into dendrograms of molecular gas emission*
 
 If you make use of the analysis code (:doc:`catalog`) or read/write FITS files,
 please also consider adding an acknowledgment for Astropy (see
@@ -61,10 +53,3 @@ Public API
 
 .. toctree::
    :maxdepth: 1
-
-   api/astrodendro.dendrogram.Dendrogram
-   api/astrodendro.dendrogram.periodic_neighbours
-   api/astrodendro.structure.Structure
-   api/astrodendro.plot.DendrogramPlotter
-   api/astrodendro.analysis
-   api/astrodendro.pruning
