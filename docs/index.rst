@@ -2,7 +2,7 @@ Spectral Clustering for Molecular Emission Segmentation
 =======================================================
 
 .. image:: scimes_logo.png
-   :width: 300px
+   :width: 200px
    :align: center
 
 ``SCIMES`` idenfifies relevant molecular gas structures within
