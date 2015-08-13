@@ -22,4 +22,4 @@ A graph is a collection of objects (*nodes*) which possess certain relations. Th
 
 From the *graph* to the *affinity matrix*
 -----------------------------------------
-Each edge weight can be collected into an affinity matrix. In a PPV cube, edges are 3D structures (isosurfaces) that possess several physical properties. We define an edge weight (or affinity) as the inverse of a certain isosurface property.  In this case we use the “PPV volume” defined as , where  is the velocity dispersion, and Reff the effective radius of the isosurfaces. Larger the volume, lower the affinity, and lower the possibility for two clumps to belong to same cloud.
+Each edge weight can be collected into an affinity matrix. In a PPV cube, edges are 3D structures (isosurfaces) that possess several physical properties. We define an edge weight (or affinity) as the inverse of a certain isosurface property.  In this case we use the "PPV volume" defined as , where  is the velocity dispersion, and R~eff~ the effective radius of the isosurfaces. Larger the volume, lower the affinity, and lower the possibility for two clumps to belong to same cloud.
