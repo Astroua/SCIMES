@@ -27,3 +27,11 @@ Each edge weight can be collected into an affinity matrix. In a PPV cube, edges 
 Cutting the graph through the *Spectral Clustering*
 ---------------------------------------------------
 The *Spectral Clustering* approach translates the ISM property encoded within the matrix into an Euclidean space where the clustering properties of the dendrogram are enhanced. To do this the first *k* eigenvectors of the affinity matrix are defined. *k* defines also the dimensionality of the clustering space and the number of clusters to search. Afterwards, ``SCIMES`` automatically finds the best assessment of leaves into clusters and the best number of clusters, i.e. GMCs.
+
+*Clustered* dendrogram
+-----------------------
+The figure shows the final product of ``SCIMES``: the *clustered* dendrogram. Each color indicates a relevant branch (i.e. *cluster*) within the dendrogram, according to the chosen affinity criterion. In this case, the clusters have similar maximal volume. Affinity criteria can be associated to virtually every property of the ISM.
+
+Giant Molecular Clouds in Orion-Monoceros
+-----------------------------------------
+The relevant branches of the Orion-Monoceros associated dendrogram correspond to the notable GMCs of the complex: Orion A (red) and B (green), Monoceros (magenta), the Northern Filament (blue), NGC2149 (cyan), the Crossbones (yellow), the Scissors (purple). ``SCIMES`` correctly identifies them without over-dividing the molecular emission.
