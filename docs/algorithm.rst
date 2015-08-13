@@ -62,4 +62,4 @@ Giant Molecular Clouds in Orion-Monoceros
 .. image:: figures/orion_clust.png
    :align: center
    
-The relevant branches of the Orion-Monoceros associated dendrogram correspond to the notable GMCs of the complex: Orion A (red) and B (green), Monoceros (magenta), the Northern Filament (blue), NGC2149 (cyan), the Crossbones (yellow), the Scissors (purple). ``SCIMES`` correctly identifies them without over-dividing the molecular emission.
+The relevant branches of the Orion-Monoceros associated dendrogram correspond to the notable GMCs of the complex: *Orion A* (red), *Orion B* (green), *Monoceros* (magenta), the *Northern Filament* (blue), NGC2149 (cyan), the *Crossbones* (yellow), the *Scissors* (purple). ``SCIMES`` correctly identifies them without over-dividing the molecular emission.
