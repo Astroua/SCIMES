@@ -1,7 +1,7 @@
 About
 -----
 
-The "Spectral Clustering for Interstellar Molecular Emission Segmentation" Python module, ``SCIMES``, uses the spectral clustering approach to identify relevant structures within dendrogram of emission from observational data or simulation.  
+The "Spectral Clustering for Interstellar Molecular Emission Segmentation" module for Python, ``SCIMES``, uses the spectral clustering approach to identify relevant structures within dendrogram of emission from observational data or simulation.  
 
 Documentation
 -------------
