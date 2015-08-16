@@ -1,5 +1,3 @@
-import warnings
-import os.path
 import math
 
 import numpy as np
@@ -512,6 +510,9 @@ class SpectralCloudstering(object):
     corresponds to the size of a Giant
     Molecular Cloud.
     
+    blind: bool
+    Show the affinity matrices. 
+    Matplotlib required.
 
     Return
     -------
