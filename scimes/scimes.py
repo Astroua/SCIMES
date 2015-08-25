@@ -1,20 +1,10 @@
-import math
-
 import numpy as np
 import itertools
 from itertools import combinations
-
 from matplotlib import pyplot as plt
-
 from astrodendro import Dendrogram, ppv_catalog
-from astropy import units as u
-from astropy.stats import median_absolute_deviation as mad
-from astropy.table import Column
-import aplpy
-
 from sklearn import metrics
 from spectral import spectral_clustering
-from skimage.measure import regionprops
 
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
