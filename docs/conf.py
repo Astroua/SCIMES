@@ -47,15 +47,14 @@ conf = config.ConfigParser()
 conf.read([os.path.join(os.path.dirname(__file__), '..', 'setup.cfg')])
 setup_cfg = dict(conf.items('metadata'))
 
-
 # Mock out the imports
 import mock
 
 MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot',
                 'sklearn', 'sklearn.metrics',
-                'sklearn.cluster', 'sklearn.cluster.spectral_clustering',  
+                'sklearn.cluster', 'sklearn.cluster.spectral_clustering',
                 'astrodendro', 'astrodendro.Dendrogram',
-                'astrodendro.ppv_catalog']
+                'astrodendro.ppv_catalog', 'astropy']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
