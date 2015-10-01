@@ -21,6 +21,3 @@ Installation
 To install the latest stable release, you can type::
 
     pip install scimes
-
-Developer version
------------------
