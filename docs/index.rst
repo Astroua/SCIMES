@@ -17,7 +17,9 @@ Documentation
    :maxdepth: 2
 
    installation.rst
-   description.rst
+   algorithm.rst
+   using.rst
+   
 
 Reporting issues and getting help
 ---------------------------------
@@ -44,7 +46,7 @@ If you make use of this package in a publication, please consider adding the
 following acknowledgment:
 
 *This research made use of SCIMES, a Python package to find relevant structures
-into dendrograms of molecular gas emission*
+into dendrograms of molecular gas emission* or the related paper.
 
 If you make use of the analysis code (:doc:`catalog`) or read/write FITS files,
 please also consider adding an acknowledgment for Astropy (see
