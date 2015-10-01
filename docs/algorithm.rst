@@ -1,4 +1,4 @@
-Step-by-step description of the algorithm
+The concepts behind the algorithm
 =========================================
 This guide provides an intuitive description of the steps followed 
 by ``SCIMES`` to identify structures within a dataset. 
