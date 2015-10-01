@@ -139,8 +139,8 @@ clustering analysis:
   clustering criteria.  
 
 ``SCIMES`` visualizes the clusters within the dendrogram throught the 
-``plot_tree`` module of ``astrodendro``.  Each cluster is indicated
-with a different color. Together, ``SCIMES`` generates the assignment 
-cube of the clouds within the star forming complex through the
-``get_mask`` module.  Pixels within a given cloud are labeled with 
-a number related to the index of the dendrogram.
+``plot_tree`` method of ``astrodendro`` (for further information visit `<https://dendrograms.readthedocs.org/en/latest/api/astrodendro.plot.DendrogramPlotter.html#astrodendro.plot.DendrogramPlotter.plot_tree>`_). Each cluster is indicated
+with a different, random color. 
+
+Together, ``SCIMES`` generates the assignment cube of the clouds within the 
+star forming complex through the ``get_mask`` method of ``astrodendro`` (`<https://dendrograms.readthedocs.org/en/latest/api/astrodendro.structure.Structure.html#astrodendro.structure.Structure.get_mask>`_).  Pixels within a given cloud are labeled with a number related to the index of the dendrogram.
