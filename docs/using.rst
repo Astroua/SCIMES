@@ -116,7 +116,7 @@ equivalent to "Giant Molecular Clouds". Those structures are already
 present in the dendrogram. The hierarchy of them can be access
 following the indications on the ``astrodendro`` documentation page: 
 `Exploring the Dendrogram <https://dendrograms.readthedocs.org/en/latest/using.html#exploring-the-dendrogram>`_,
-while their properties are collected in the dendrogram catalog.
+while their properties and statistics are collected in the dendrogram (`pp <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPStatistic>`_ or `ppv <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPVStatistic>`_) catalog.
 Together, ``SCIMES`` provides other outputs that results from the
 clustering analysis:
 
