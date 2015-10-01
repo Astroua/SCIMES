@@ -16,4 +16,10 @@ Please report issues via the [GitHub issue tracker](https://github.com/Astroua/s
 Credits
 -------
 
-This package was developed by:
+This package and the related paper has been written by:
+
+* Dario Colombo
+* Erik Rosolowsky
+* Adam Ginsburg
+* Ana Duarte-Cabral
+* Annie Hughes
