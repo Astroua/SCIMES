@@ -44,14 +44,15 @@ masked with a 2 sigma cut.
 
 ``SCIMES`` applies the spectral clustering based on the properties of
 all structures within the dendrogram. The dendrogram catalog
-can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.ppv_catalog>`_ or `pp_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.pp_catalog>`_
-functions, for example:
+can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.ppv_catalog>`_ or `pp_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.pp_catalog>`_ functions, for example:
 
     >>> from astrodendro import ppv_catalog
     >>> from astropy import units as u
     >>> metadata = {}
     >>> metadata['data_unit'] = u.Jy / u.beam
     >>> cat = ppv_catalog(d, metadata)
+
+Further information about the dendrogram catalog functions can be found here: `Making a catalog <https://dendrograms.readthedocs.org/en/latest/catalog.html#making-a-catalog>`_.
 
 Clustering the dendrogram
 ------------------------
