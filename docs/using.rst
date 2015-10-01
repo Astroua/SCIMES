@@ -27,7 +27,7 @@ Afterward the dendrogram can be computed:
 
 the astrodendro.dendrogram.Dendrogram class has various tuning 
 parameters. To explore them and their meaning, please refer to:
-`<https://dendrograms.readthedocs.org/en/latest/using.html>`_.
+`Computing and exploring dendrograms <https://dendrograms.readthedocs.org/en/latest/using.html>`_.
 
 The dendrogram of Orion-Monoceros data shown in the paper has be
 obtained using the following parameters:
@@ -44,7 +44,7 @@ masked with a 2 sigma cut.
 
 ``SCIMES`` applies the spectral clustering based on the properties of
 all structures within the dendrogram. The dendrogram catalog
-can be obtained by the ``ppv_catalog()`` or ``pp_catalog()``
+can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.ppv_catalog>`_ or `pp_catalog() <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.pp_catalog>`_
 functions, for example:
 
     >>> from astrodendro import ppv_catalog
@@ -113,8 +113,8 @@ to the scale of the observation and the used affinity criteria. In the
 case of Orion-Monoceros, the properties of the structures are the
 equivalent to "Giant Molecular Clouds". Those structures are already
 present in the dendrogram. The hierarchy of them can be access
-through
-`<https://dendrograms.readthedocs.org/en/latest/using.html#exploring-the-dendrogram>`_,
+following the indications on the ``astrodendro`` documentation page: 
+`Exploring the Dendrogram <https://dendrograms.readthedocs.org/en/latest/using.html#exploring-the-dendrogram>`_,
 while their properties are collected in the dendrogram catalog.
 Together, ``SCIMES`` provides other outputs that results from the
 clustering analysis:
