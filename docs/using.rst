@@ -92,17 +92,17 @@ optional inputs:
   and generates the clustering based on all these properties.
 
 * ``user_scalpars``: the scaling parameters of the affinity matrices
-  can be provided as input. The scaling parameter is used to suppress
-  some affinity values of the matrix and enhancing others, by
+  can be provided as input. The scaling parameters are used to suppress
+  some affinity values of the matrix and enhance others by
   rescaling the matrices with a Gaussian kernel. Also, this operation
-  normalizes the matrices and makes them prompt to be aggregated
-  or to procede to the clustering. The choice of the scaling parameters
+  normalizes the matrices and prompts the user whether the matrices should be aggregated
+  or this step should be skipped, proceeding directly to the clustering. The choice of the scaling parameters
   might influence the final result. If not provided, ``SCIMES``
   estimates them directly from the affinity matrices.
 
 * ``savesingles``: by definition single leaves do not form clusters,
-  since clusters are constituted by, at least, two objects. Therefore, they
-  are eliminated, by default, from the final cluster counts. For some
+  since clusters are constituted by at least two objects. Therefore, they
+  are eliminated by default from the final cluster counts. For some
   applications, as in case of low resolution observations,
   single leaves might represent relevant entities that need to be
   retained. This keyword forces ``SCIMES`` to consider unclustered and
