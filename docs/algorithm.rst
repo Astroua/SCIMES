@@ -38,7 +38,16 @@ From the *graph* to the *affinity matrix*
 .. image:: figures/affmat.png
    :align: center
 
-Each edge weight can be collected into an affinity matrix. In a PPV cube, edges are 3D structures (isosurfaces) that possess several physical properties. We define an edge weight (or affinity) as the inverse of a certain isosurface property.  In this case we use the "PPV volume", defined as the product between the area from the effective radius and the velocity dispersion of the isosurfaces. Larger the volume, lower the affinity, and lower the possibility for two clumps to belong to same cloud. By default, ``SCIMES`` performed the segmentation based on the "volume", "flux", or an aggregate version of the two matrices. These properties can also be defined by there physical version, once distances are provided. 
+Each edge weight can be collected into an affinity matrix. In a PPV cube, edges
+are 3D structures (isosurfaces) that possess several physical properties. We
+define an edge weight (or affinity) as the inverse of a certain isosurface
+property.  In this case we use the "PPV volume", defined as the product between
+the area from the effective radius and the velocity dispersion of the
+isosurfaces. The larger the volume, the lower the affinity, and the lower the
+possibility for two clumps to belong to same cloud. By default, ``SCIMES``
+performs the segmentation based on the "volume", "flux", or an aggregate
+version of the two matrices. These properties can also be defined by their
+physical version once distances are provided. 
 
 Cutting the graph through the *Spectral Clustering*
 ---------------------------------------------------
