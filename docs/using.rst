@@ -111,16 +111,15 @@ optional inputs:
 
 Clustering results
 --------------
-The main output of the algorithm, ``clusters`` is a list of dendrogram
-indeces representing the relevant structures within the dendrogram according
-to the scale of the observation and the used affinity criteria. In the
+The main output of the algorithm, ``clusters``, is a list of dendrogram
+indices representing the relevant structures within the dendrogram according
+to the scale of the observation and the affinity criteria used. In the
 case of Orion-Monoceros, the properties of the structures are the
 equivalent to "Giant Molecular Clouds". Those structures are already
-present in the dendrogram. The hierarchy of them can be access
-following the indications on the ``astrodendro`` documentation page: 
-`Exploring the Dendrogram <https://dendrograms.readthedocs.org/en/latest/using.html#exploring-the-dendrogram>`_,
-while their properties and statistics are collected in the dendrogram (`pp <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPStatistic>`_ or `ppv <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPVStatistic>`_) catalog.
-Together, ``SCIMES`` provides other outputs that results from the
+present in the dendrogram. The hierarchy can be accessed
+following the instructions on the `astrodendro documentation page  <https://dendrograms.readthedocs.org/en/latest/using.html#exploring-the-dendrogram>`_,
+while their properties and statistics are collected in the dendrogram `pp <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPStatistic>`_ or `ppv <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.analysis.html#astrodendro.analysis.PPVStatistic>`_ catalog.
+``SCIMES`` provides other outputs that result from the
 clustering analysis:
 
 * ``affmats``: numpy arrays containing the affinity matrices produces
