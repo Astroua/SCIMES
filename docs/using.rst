@@ -84,9 +84,9 @@ optional inputs:
   input. In this case, ``SCIMES`` will not make any attempt to guess
   it from the affinity matrix.
 
-* ``user_ams``: if a clustering based on a different property then
+* ``user_ams``: if clustering based on a different property than
   volume and luminosity is wanted, this can be obtained by providing a
-  user defined affinity matrix. This needs to be ordered according to
+  user defined affinity matrix. This matrix needs to be ordered according to
   the dendrogram leaves indexing. Several matrices based on various
   properties can be provided all together; ``SCIMES`` aggregates them
   and generates the clustering based on all these properties.
