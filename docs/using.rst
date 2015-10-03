@@ -1,10 +1,13 @@
 Running ``SCIMES``
 ==================
 
-``SCIMES`` relies heavily on two packages: `astrodendro <https://dendrograms.readthedocs.org/en/latest/index.html>`_ that generates the actual inputs
-of the program, i.e. the dendrogram and the catalog of the structure properties; and
-`scikit-learn <http://scikit-learn.org/stable/>`_ that provides the necessary cluster analysis
-techniques. ``SCIMES`` is essentially a wrapper of these two
+``SCIMES`` relies heavily on two packages: 
+
+ * `astrodendro <https://dendrograms.readthedocs.org/en/latest/index.html>`_  generates the actual inputs of the program, i.e. the dendrogram and the catalog of the structure properties
+ * `scikit-learn <http://scikit-learn.org/stable/>`_  provides the necessary cluster analysis
+techniques. 
+
+``SCIMES`` is essentially a wrapper of these two
 packages, where the cluster analysis is used to select relevant
 structures within the dendrogram. All explorative tools of the
 structures are the same of the ``astrodendro`` package.
