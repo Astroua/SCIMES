@@ -12,7 +12,7 @@ Which dataset to use?
 
 ``SCIMES`` can be applied to *position-position-velocity* (PPV) data cubes, *position-position-position* simulations or *position-position* images. For this example we use the PPV data cube of
 the Orion-Monoceros complex imaged in 12CO(1-0) by 
-`Wilson et al. 2005, A&A, 430, 523W <http://adsabs.harvard.edu/abs/2005A%26A...430..523W>`_ whose presents a spatial and spectral resolution of ~ 1 pc (at an average distance to the complex of 450 pc) and 0.65 km/s, respectively. The figure shows the square-root of the intergrated intensity map of the dataset.
+`Wilson et al. 2005, A&A, 430, 523W <http://adsabs.harvard.edu/abs/2005A%26A...430..523W>`_ whose presents a spatial and spectral resolution of ~ 1 pc (at an average distance to the complex of 450 pc) and 0.65 km/s, respectively. The figure shows the square-root of the integrated intensity map of the dataset.
 
 
 Building the dendrogram
