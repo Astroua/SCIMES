@@ -78,7 +78,7 @@ or if only the luminosity matrix is needed:
     >>> dclust = SpectralCloudstering(d, cat, cl_volume = False)
 
 The :class:`~scimes.SpectralCloudstering` class provides several
-optional inputs to face the needs of the user:
+optional inputs:
 
 * ``user_k``: the number of clusters expected can be provided as an
   input. In this case, ``SCIMES`` will not make any attempt to guess
