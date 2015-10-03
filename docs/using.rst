@@ -67,8 +67,8 @@ the dendrogram and its related catalog:
     >>> dclust = SpectralCloudstering(d, cat)
 
 By default, the clustering is performed on the aggregate affinity matrix given by
-the element-wise multiplication of the luminosity and the volume
-matrix. If the desidered clustering needs to imply, for example, only
+the `element-wise multiplication of the luminosity and the volume
+matrix <http://scimes.readthedocs.org/en/latest/algorithm.html#from-the-graph-to-the-affinity-matrix>`_. If the desired clustering needs to imply, for example, only
 the volume matrix, this can be obtained by setting:  
 
     >>> dclust = SpectralCloudstering(d, cat, cl_luminosity = False)
