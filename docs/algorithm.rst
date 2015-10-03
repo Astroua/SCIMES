@@ -29,7 +29,7 @@ A *dendrogram* as a *graph*
 .. image:: figures/graph.png
    :align: center
 
-How can we identify relevant objects within the dendrogram? We need first to abstract the dendrogram as a graph.
+How can we identify relevant objects within the dendrogram? We need first to abstract the dendrogram as a `graph <https://en.wikipedia.org/wiki/Graph_(mathematics)>`_.
 A graph is a collection of objects (*nodes*) which possess certain relations. These relations are represented by *edges* between the *nodes* whose weight indicate the strength of the relations. A dendrogram can be abstract into a graph by considering the “leaves” as graph “nodes”. Every leaf is connected to another leaf in the dendrogram at a given hierarchical level. “Edges” are represented by the highest structure of the dendrogram that contains the two leaves considered. The figure follows the same color convention as the previous one. 
 
 From the *graph* to the *affinity matrix*
