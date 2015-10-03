@@ -63,7 +63,7 @@ The `Spectral Clustering <http://scikit-learn.org/stable/modules/clustering.html
 .. image:: figures/dendro_clust.png
    :align: center
    
-The figure shows the final product of ``SCIMES``: the *clustered* dendrogram. Each color indicates a relevant branch (i.e. *cluster*) within the dendrogram, according to the chosen affinity criterion. In this case, the clusters have similar maximal volume. Affinity criteria can be associated to virtually every property of the ISM.
+The figure shows the final product of ``SCIMES``: the *clustered* dendrogram. Each color indicates a relevant branch (i.e. *cluster*) within the dendrogram, according to the chosen affinity criterion. In this case, the clusters are selected based on their similar maximal volume. Affinity criteria can be based upon virtually any observable property of the ISM.
 
 Giant Molecular Clouds in Orion-Monoceros
 -----------------------------------------
