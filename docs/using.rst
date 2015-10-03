@@ -122,14 +122,14 @@ while their properties and statistics are collected in the dendrogram `pp <https
 ``SCIMES`` provides other outputs that result from the
 clustering analysis:
 
-* ``affmats``: numpy arrays containing the affinity matrices produces
-  by the algorithm or provided as inputs by the user. The indeces of
+* ``affmats``: numpy arrays containing the affinity matrices produced
+  by the algorithm or provided as inputs by the user. The indices of
   those matrices represent the ``leaves`` of the dendrogram permuted
-  in order to make the possible matrix block structure to emerge. The
+  in order to make the possible matrix block structure emerge. The
   permutation, however, does not influence the following spectral embedding.
 
-* ``escalpars``: list containing the estimated scale parameters out
-  from the clustering analysis from the different input affinity
+* ``escalpars``: list containing the estimated scale parameters
+  from the clustering analysis associated with the different input affinity
   matrices. Scaling parameters represent maximal properties (by
   default ``volume`` and ``luminosity``, or ``flux``) that the final
   structures tend to have.
@@ -137,13 +137,12 @@ clustering analysis:
 * ``silhouette``: float showing the silhouette of the selected
   clustering configuration. This value ranges between 0 and 1 and
   represents the goodness of the clustering, where values close to 0
-  indicate poor clustering, while values close to 1 indicates well
-  separated clusters (i.e. good clustering), according to the selected
-  clustering criteria.  
+  indicate poor clustering, while values close to 1 indicate well
+  separated clusters (i.e. good clustering)
 
 ``SCIMES`` visualizes the clusters within the dendrogram throught the 
 `plot_tree <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.plot.DendrogramPlotter.html#astrodendro.plot.DendrogramPlotter.plot_tree>`_ method of ``astrodendro``. Each cluster is indicated
-with a different, random color. 
+with a different random color. 
 
-Together, ``SCIMES`` generates the assignment cube of the clouds within the 
-star forming complex through the `get_mask <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.structure.Structure.html#astrodendro.structure.Structure.get_mask>`_ method of ``astrodendro``.  Pixels within a given cloud are labeled with a number related to the index of the dendrogram.
+Together, ``SCIMES`` generates the assignment cube of the clouds
+through the `get_mask <https://dendrograms.readthedocs.org/en/latest/api/astrodendro.structure.Structure.html#astrodendro.structure.Structure.get_mask>`_ method of ``astrodendro``.  Pixels within a given cloud are labeled with a number related to the index of the dendrogram.
