@@ -26,12 +26,12 @@ conf = config.ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
-PACKAGENAME = metadata.get('package_name', 'packagename')
-DESCRIPTION = metadata.get('description', 'Astropy affiliated package')
-AUTHOR = metadata.get('author', '')
-AUTHOR_EMAIL = metadata.get('author_email', '')
+PACKAGENAME = metadata.get('package_name', 'scimes')
+DESCRIPTION = metadata.get('description', 'Spectral Clustering for Molecular Interstellar Emission Segmentation')
+AUTHOR = metadata.get('author', 'Dario Colombo, Erik Rosolowsky, Adam Ginsburg, Ana Duarte-Cabral, and Annie Hughes')
+AUTHOR_EMAIL = metadata.get('author_email', 'dcolombo@mpifr.de')
 LICENSE = metadata.get('license', 'unknown')
-URL = metadata.get('url', 'http://astropy.org')
+URL = metadata.get('url', 'http://scimes.readthedocs.org')
 
 # Get the long description from the package's docstring
 __import__(PACKAGENAME)
@@ -100,19 +100,18 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 # ``setup``, since these are now deprecated. See this link for more details:
 # https://groups.google.com/forum/#!topic/astropy-dev/urYO8ckB2uM
 
-setup(name=PACKAGENAME,
-      version=VERSION,
-      description=DESCRIPTION,
-      scripts=scripts,
-      install_requires=['astropy'],
-      author=AUTHOR,
-      author_email=AUTHOR_EMAIL,
-      license=LICENSE,
-      url=URL,
-      long_description=LONG_DESCRIPTION,
-      cmdclass=cmdclassd,
-      zip_safe=False,
-      use_2to3=True,
-      entry_points=entry_points,
-      **package_info
-)
+setup(name='scimes',
+      version='0.1.0',
+      description='Spectral Clustering for Molecular Interstellar Emission Segmentation',
+      install_requires=['numpy','astropy','astrodendro','sklearn','matplotlib'],
+      author='Dario Colombo, Erik Rosolowsky, Adam Ginsburg, Ana Duarte-Cabral, and Annie Hughes',
+      author_email='dcolombo@mpifr.de',
+      url='http://scimes.readthedocs.org',
+      keywords=['Scientific/Engineering'],
+      classifiers=[
+                   "Development Status :: 4 - Beta",
+                   "Programming Language :: Python",
+                   "License :: OSI Approved :: MIT License",
+                   "Topic :: Scientific/Engineering :: Astronomy"
+                  ],
+     )
