@@ -26,7 +26,7 @@ conf = config.ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
-PACKAGENAME = metadata.get('package_name', 'scimes')
+PACKAGENAME = metadata.get('package_name', 'SCIMES')
 DESCRIPTION = metadata.get('description', 'Spectral Clustering for Molecular Interstellar Emission Segmentation')
 AUTHOR = metadata.get('author', 'Dario Colombo, Erik Rosolowsky, Adam Ginsburg, Ana Duarte-Cabral, and Annie Hughes')
 AUTHOR_EMAIL = metadata.get('author_email', 'dcolombo@mpifr.de')
@@ -43,7 +43,7 @@ LONG_DESCRIPTION = package.__doc__
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.0.dev'
+VERSION = '2.0.dev'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -100,18 +100,26 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 # ``setup``, since these are now deprecated. See this link for more details:
 # https://groups.google.com/forum/#!topic/astropy-dev/urYO8ckB2uM
 
-setup(name='scimes',
-      version='0.1.0',
-      description='Spectral Clustering for Molecular Interstellar Emission Segmentation',
-      install_requires=['numpy','astropy','astrodendro','sklearn','matplotlib'],
-      author='Dario Colombo, Erik Rosolowsky, Adam Ginsburg, Ana Duarte-Cabral, and Annie Hughes',
-      author_email='dcolombo@mpifr.de',
-      url='http://scimes.readthedocs.org',
-      keywords=['Scientific/Engineering'],
+setup(name='SCIMES',
+      version=VERSION,
+      description=DESCRIPTION,
+      scripts=scripts,
+      requires=['astropy', 'numpy', 'matplotlib', 'astrodendro', 'sklearn'],
+      install_requires=['astropy', 'astrodendro', 'sklearn'],
+      provides=[PACKAGENAME],
+      author=AUTHOR,
+      author_email=AUTHOR_EMAIL,
+      license=LICENSE,
+      url=URL,
+      long_description=LONG_DESCRIPTION,
+      cmdclass=cmdclassd,
+      zip_safe=False,
+      use_2to3=False,
       classifiers=[
-                   "Development Status :: 4 - Beta",
+                   "Development Status :: 5 - Production/Stable",
                    "Programming Language :: Python",
                    "License :: OSI Approved :: MIT License",
-                   "Topic :: Scientific/Engineering :: Astronomy"
+                   "Topic :: Science/Engineering :: Astronomy",
                   ],
-     )
+      **package_info
+)
