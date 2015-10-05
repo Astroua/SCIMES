@@ -29,7 +29,7 @@ A *dendrogram* as a *graph*
 .. image:: figures/graph.png
    :align: center
 
-How can we identify relevant objects within the dendrogram? We need first to abstract the dendrogram as a graph.
+How can we identify relevant objects within the dendrogram? We need first to abstract the dendrogram as a `graph <https://en.wikipedia.org/wiki/Graph_(mathematics)>`_.
 A graph is a collection of objects (*nodes*) which possess certain relations. These relations are represented by *edges* between the *nodes* whose weight indicate the strength of the relations. A dendrogram can be abstract into a graph by considering the “leaves” as graph “nodes”. Every leaf is connected to another leaf in the dendrogram at a given hierarchical level. “Edges” are represented by the highest structure of the dendrogram that contains the two leaves considered. The figure follows the same color convention as the previous one. 
 
 From the *graph* to the *affinity matrix*
@@ -38,7 +38,16 @@ From the *graph* to the *affinity matrix*
 .. image:: figures/affmat.png
    :align: center
 
-Each edge weight can be collected into an affinity matrix. In a PPV cube, edges are 3D structures (isosurfaces) that possess several physical properties. We define an edge weight (or affinity) as the inverse of a certain isosurface property.  In this case we use the "PPV volume", defined as the product between the area from the effective radius and the velocity dispersion of the isosurfaces. Larger the volume, lower the affinity, and lower the possibility for two clumps to belong to same cloud. By default, ``SCIMES`` performed the segmentation based on the "volume", "flux", or an aggregate version of the two matrices. These properties can also be defined by there physical version, once distances are provided. 
+Each edge weight can be collected into an affinity matrix. In a PPV cube, edges
+are 3D structures (isosurfaces) that possess several physical properties. We
+define an edge weight (or affinity) as the inverse of a certain isosurface
+property.  In this case we use the "PPV volume", defined as the product between
+the area from the effective radius and the velocity dispersion of the
+isosurfaces. The larger the volume, the lower the affinity, and the lower the
+possibility for two clumps to belong to same cloud. By default, ``SCIMES``
+performs the segmentation based on the "volume", "flux", or an aggregate
+version of the two matrices. These properties can also be defined by their
+physical version once distances are provided. 
 
 Cutting the graph through the *Spectral Clustering*
 ---------------------------------------------------
@@ -46,7 +55,7 @@ Cutting the graph through the *Spectral Clustering*
 .. image:: figures/spectclust.png
    :align: center
 
-The `Spectral Clustering <http://scikit-learn.org/stable/modules/clustering.html#spectral-clustering>`_ approach translates the ISM property encoded within the matrix into an Euclidean space where the clustering properties of the dendrogram are enhanced. To do this the first *k* eigenvectors of the affinity matrix are defined (spectral embedding). *k* defines also the dimensionality of the clustering space and the number of clusters to search. Afterwards, ``SCIMES`` automatically finds the best assessment of leaves into clusters and the best number of clusters, i.e. GMCs. In the figure, a concentric distribution of objects is shown. Objects with the same color have higher affinity (i.e. their connection is stronger). However they cannot be clustered using a Euclidean distance-based algorithm. The spectral clustering moves to the clustering space all affinity information through the spectral embedding of the affinity matrix.
+The `Spectral Clustering <http://scikit-learn.org/stable/modules/clustering.html#spectral-clustering>`_ approach translates the ISM property encoded within the matrix into a Euclidean space where the clustering properties of the dendrogram are enhanced. To do this the first *k* eigenvectors of the affinity matrix are defined (spectral embedding). *k* defines also the dimensionality of the clustering space and the number of clusters to search. Afterwards, ``SCIMES`` automatically finds the best arrangement of leaves into clusters and the best number of clusters, i.e. GMCs. In the figure, a concentric distribution of objects is shown. Objects with the same color have higher affinity (i.e. their connection is stronger). However they cannot be clustered using a Euclidean distance-based algorithm. The spectral clustering transforms all affinity information to the clustering space via spectral embedding of the affinity matrix.
 
 *Clustered* dendrogram
 -----------------------
@@ -54,7 +63,7 @@ The `Spectral Clustering <http://scikit-learn.org/stable/modules/clustering.html
 .. image:: figures/dendro_clust.png
    :align: center
    
-The figure shows the final product of ``SCIMES``: the *clustered* dendrogram. Each color indicates a relevant branch (i.e. *cluster*) within the dendrogram, according to the chosen affinity criterion. In this case, the clusters have similar maximal volume. Affinity criteria can be associated to virtually every property of the ISM.
+The figure shows the final product of ``SCIMES``: the *clustered* dendrogram. Each color indicates a relevant branch (i.e. *cluster*) within the dendrogram, according to the chosen affinity criterion. In this case, the clusters are selected based on their similar maximal volume. Affinity criteria can be based upon virtually any observable property of the ISM.
 
 Giant Molecular Clouds in Orion-Monoceros
 -----------------------------------------
