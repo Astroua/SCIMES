@@ -29,7 +29,7 @@ metadata = dict(conf.items('metadata'))
 PACKAGENAME = metadata.get('package_name', 'SCIMES')
 DESCRIPTION = metadata.get('description', 'Spectral Clustering for Molecular Interstellar Emission Segmentation')
 AUTHOR = metadata.get('author', 'Dario Colombo, Erik Rosolowsky, Adam Ginsburg, Ana Duarte-Cabral, and Annie Hughes')
-AUTHOR_EMAIL = metadata.get('author_email', 'dcolombo@mpifr.de')
+AUTHOR_EMAIL = metadata.get('author_email', 'dario.colombo222@gmail.com')
 LICENSE = metadata.get('license', 'unknown')
 URL = metadata.get('url', 'http://scimes.readthedocs.org')
 
