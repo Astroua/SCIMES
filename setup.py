@@ -119,7 +119,7 @@ setup(name='scimes',
                    "Development Status :: 5 - Production/Stable",
                    "Programming Language :: Python",
                    "License :: OSI Approved :: MIT License",
-                   "Topic :: Science/Engineering :: Astronomy",
+                   "Topic :: Scientific/Engineering :: Astronomy",
                   ],
       **package_info
 )
