@@ -13,7 +13,9 @@ real observations. Therefore, we have to open a FITS file by using,
 for example, ``astropy`` :
 
     >>> from astropy.io import fits
-    >>> data = fits.getdata('observation.fits')
+    >>> hdu = fits.getdata('orion_12CO.fits')[0]
+    >>> data = hdu.data
+    >>> hd = hdu.header
 
 Afterward the dendrogram can be computed:
 
@@ -29,8 +31,6 @@ obtained using the following parameters:
 
     >>> sigma = 0.3 #K, noise level
     >>> ppb = 1.3 #pixels/beam
-    >>> from astropy.io import fits
-    >>> data = fits.getdata('orion.fits')
     >>> from astrodendro import Dendrogram
     >>> d = Dendrogram.compute(data, min_value=0, min_delta=2*sigma, min_npix=3*ppb)
 
