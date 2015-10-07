@@ -273,7 +273,7 @@ affinity matrix are not well defined:
 
 and the dendrogram branches appear overdivided:
 
-.. image:: figures/orion_sigvmat.png
+.. image:: figures/orion_sigvdendro.png
    :align: center
 
 providing:
