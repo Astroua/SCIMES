@@ -290,3 +290,7 @@ providing:
 
 .. image:: figures/orion_sigvmap.png
    :align: center
+
+This indicates that the structures in Orion-Monoceros are not highly
+separated along the line of sight and that, in general, the velocity
+dispersion is not a good criterion for this dataset.
