@@ -2,8 +2,10 @@
 ====================
 
 In this tutorial we will show the steps necessary to obtain the segmentation of the 
-Orion-Monoceros dataset (:download:`orion.fits`, public available on 
-`<https://www.cfa.harvard.edu/rtdc/CO/NumberedRegions/DHT27/index.html>`_) presented in the ``SCIMES`` paper.
+Orion-Monoceros dataset (:download:`orion_12CO.fits`, public available on 
+`<https://www.cfa.harvard.edu/rtdc/CO/NumberedRegions/DHT27/index.html>`_)
+presented in the ``SCIMES`` paper. Most of this tutorial is collected
+in the script :download:`orion2scimes.py`.
 
 Building the dendrogram and the structure catalog
 ----------------------------------------
@@ -228,6 +230,14 @@ the PPV assigment cube is visualized:
 
 .. image:: figures/orion_volasgnmap.png
    :align: center
+
+A nice representation of the decomposed objects might be obtained by
+using `APLpy <https://aplpy.github.io/>`_:
+
+.. image:: figures/orion_volmap.png
+   :align: center
+
+where the integrated intensity map can be downloaded from :download:`orion_12CO_mom0.fits`.
 
 Difference between pixel and physical property-based segmentation
 -------------------------------------------------------
