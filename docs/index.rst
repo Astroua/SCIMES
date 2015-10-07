@@ -33,11 +33,11 @@ Developers
 
 This package is developed by:
 
-* [Dario Colombo](https://github.com/dcolombo)
-* [Erik Rosolowsky](https://github.com/low-sky)
-* [Adam Ginsburg](https://github.com/keflavich)
-* [Ana Duarte-Cabral](https://github.com/anacabral)
-* [Annie Hughes](Annie.Hughes@irap.omp.eu)
+* Dario Colombo
+* Erik Rosolowsky
+* Adam Ginsburg
+* Ana Duarte-Cabral
+* Annie Hughes
 
 
 Citing SCIMES
