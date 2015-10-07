@@ -1,31 +1,4 @@
-import warnings
-import os.path
-
-import numpy as np
-import math
-import aplpy
-import random
-import itertools
-
 from matplotlib import pyplot as plt
-
-from astrodendro import Dendrogram, ppv_catalog
-from astropy import units as u
-from astropy.io import fits
-from astropy import wcs
-from astropy.table.table import Column
-from astropy.table import Table
-
-from sklearn.cluster import spectral_clustering
-from skimage.measure import regionprops
-
-from scimes import SpectralCloudstering
-
-from datetime import datetime
-
-from pdb import set_trace as stop
-
-
 
 def dendroplot_clusters(clusters,
                         dend,

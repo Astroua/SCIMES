@@ -43,7 +43,7 @@ p.plot_tree(ax, color='black')
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
 print "Generate a catalog of dendrogram structures"
 metadata = {}
-metadata['data_unit'] = u.Jy / u.beam #This should be Kelvin (not yet implemented)!
+metadata['data_unit'] = u.Jy #This should be Kelvin (not yet implemented)!
 cat = ppv_catalog(d, metadata)
 
 

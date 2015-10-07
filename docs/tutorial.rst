@@ -47,12 +47,12 @@ can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/la
     >>> from astrodendro import ppv_catalog
     >>> from astropy import units as u
     >>> metadata = {}
-    >>> metadata['data_unit'] = u.Jy / u.beam
+    >>> metadata['data_unit'] = u.Jy
     >>> cat = ppv_catalog(d, metadata)
 
 Further information about the dendrogram catalog functions can be found here: `Making a catalog <https://dendrograms.readthedocs.org/en/latest/catalog.html#making-a-catalog>`_.
 
-Clustering the dendrogram
+Cluster the dendrogram
 ------------------------
 The clustering of the dendrogram is obtained through the 
 :class:`~scimes.SpectralCloudstering` class which requires as inputs
