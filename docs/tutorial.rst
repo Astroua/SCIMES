@@ -229,8 +229,8 @@ the PPV assigment cube is visualized:
 .. image:: figures/orion_volasgnmap.png
    :align: center
 
-Difference between pixel and physical property segmentation
--------------------------------------------------
+Difference between pixel and physical property-based segmentation
+-------------------------------------------------------
 The above segmentation of the Orion-Monoceros dataset has been obtain
 using pixel-based properties. Nevertheless, if distances are know
 those can be attributed to every structrure within the dendrogram in
@@ -240,7 +240,7 @@ km/s. The objects obtained in this way are very similar to the ones
 decomposed using the pixel-based "volume". Nevertheless, NGC2149 and
 Monoceros are separated:
 
-.. image:: figures/orion_clust.png
+.. image:: figures/orion_volmap_dist.png
    :align: center
 
 Affinity matrix choice
