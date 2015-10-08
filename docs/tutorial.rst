@@ -258,7 +258,8 @@ Affinity matrix choice
 By default ``SCIMES`` deals with the "volume" and "luminosity"
 matrices. Nevertheless, every affinity matrix can be provided by the
 user in order to obtain segmentation based on the desired property of
-the ISM. However, ``SCIMES`` works well with monotonic and block
+the ISM. This operation is generally made through the ``user_ams`` keyword.
+However, ``SCIMES`` works well with monotonic and block
 diagonal matrices, and might misbehave when non-monotonic and strictly
 continous criteria are provided. In this example we show the
 segmentation of the Orion-Monoceros dataset using the "velocity
@@ -294,3 +295,25 @@ providing:
 This indicates that the structures in Orion-Monoceros are not highly
 separated along the line of sight and that, in general, the velocity
 dispersion is not a good criterion for this dataset.
+
+``SCIMES`` behaviour at low resolution
+--------------------------------
+``SCIMES`` is designed to find well resolved objects, constituted by
+several resolution elements. Nevertheless, it might be implied also to low
+resolution observation. In this case the code essentially behaves as 
+a "clump-finder". When working at low resolution, the ``savesingles``
+keyword might be necessary (see above). In this example, the
+Orion-Monoceros dataset has been to a resolution of 10 pc
+(i.e. approximately a factor 10 lower than the original
+resolution). The following image show the result of ``SCIMES`` run.
+
+.. image:: figures/orion_res10pc.png
+   :align: center
+ 
+Red contours indicate objects that have been decomposed by ``SCIMES``
+using the default settings. Blue contours indicates, instead, the
+additional objects retained by enabling the ``savesingles``
+keyword. This keyword forced ``SCIMES`` to keep single leaves in the
+final cluster catalog, and allow to decomposed some notable clouds (as
+Monoceros, the Crossbones, and the Scissor) that at this resolution
+are constituted by a single leaf.  
