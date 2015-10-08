@@ -299,11 +299,11 @@ dispersion is not a good criterion for this dataset.
 ``SCIMES`` behaviour at low resolution
 --------------------------------
 ``SCIMES`` is designed to find well resolved objects, constituted by
-several resolution elements. Nevertheless, it might be implied also to low
-resolution observation. In this case the code essentially behaves as 
+several resolution elements. Nevertheless, it might be applied also to low
+resolution observations. In this case the code essentially behaves as 
 a "clump-finder". When working at low resolution, the ``savesingles``
-keyword might be necessary (see above). In this example, the
-Orion-Monoceros dataset has been to a resolution of 10 pc
+keyword might be necessary, though (see above). In this example, the
+Orion-Monoceros dataset has been smoothed to a resolution of 10 pc
 (i.e. approximately a factor 10 lower than the original
 resolution). The following image show the result of ``SCIMES`` run.
 
@@ -316,4 +316,4 @@ additional objects retained by enabling the ``savesingles``
 keyword. This keyword forced ``SCIMES`` to keep single leaves in the
 final cluster catalog, and allow to decomposed some notable clouds (as
 Monoceros, the Crossbones, and the Scissor) that at this resolution
-are constituted by a single leaf.  
+are constituted by a single leaf, therefore erased by default. 
