@@ -6,4 +6,4 @@ The class called several function to generate the affinity matrices,
 rescale them, estabilish the number of clusters, run the actual
 spectral clustering, and cleaning the sparse clusters.
 
-.. autofunction:: scimes.SpectralCloudstering
+.. autofunction:: scimes.scimes.SpectralCloudstering

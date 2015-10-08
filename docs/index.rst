@@ -40,6 +40,13 @@ This package is developed by:
 * Ana Duarte-Cabral
 * Annie Hughes
 
+Acknowledgements
+----------------
+
+Thanks for the help with the documentation to:
+
+* Eric Koch
+
 
 Citing SCIMES
 ------------------
