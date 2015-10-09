@@ -1,13 +1,13 @@
 import numpy as np
-import itertools
 import random
-from itertools import combinations
+from itertools import combinations, cycle
 from matplotlib import pyplot as plt
-from astrodendro import Dendrogram, ppv_catalog
 from astropy.io import fits
 from astropy.table.table import Column
 from sklearn import metrics
 from sklearn.cluster.spectral import spectral_clustering
+
+from pdb import set_trace as stop
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
 
@@ -740,6 +740,7 @@ class SpectralCloudstering(object):
             print("WARNING: adding volume = pi * radius^2 * v_rms to the catalog.")
             catalog.add_column(Column(catalog['radius']**2*np.pi *
                                       catalog['v_rms'], 'volume'))
+        
         self.cl_volume = cl_volume
         self.cl_luminosity = cl_luminosity
         self.user_k = user_k or 0
@@ -766,7 +767,7 @@ class SpectralCloudstering(object):
             print("WARNING: clustering will be performed on the Aggregated matrix")
 
         # Default colors in case plot_connected_colors is called before showdendro
-        self.colors = itertools.cycle('rgbcmyk')
+        self.colors = cycle('rgbcmyk')
         
         self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram,
                                                                                     self.catalog,
