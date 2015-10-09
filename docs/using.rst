@@ -14,7 +14,7 @@ structures are the same of the ``astrodendro`` package.
 The algorithm is illustrated graphically in :doc:`algorithm`.
 
 Building the dendrogram and the structure catalog
-----------------------------------------
+-------------------------------------------------
 First, we need to compute the dendrogram and its related catalog,
 i.e. the inputs of  ``SCIMES``. In this example we are dealing with 
 real observations. Therefore, we have to open a FITS file by using,
@@ -58,7 +58,7 @@ can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/la
 Further information about the dendrogram catalog functions can be found here: `Making a catalog <https://dendrograms.readthedocs.org/en/latest/catalog.html#making-a-catalog>`_.
 
 Clustering the dendrogram
-------------------------
+-------------------------
 The clustering of the dendrogram is obtained through the 
 :class:`~scimes.SpectralCloudstering` class which requires as inputs
 the dendrogram and its related catalog:
@@ -110,7 +110,7 @@ optional inputs:
   final cluster index catalog.       
 
 Clustering results
---------------
+------------------
 The main output of the algorithm, ``clusters``, is a list of dendrogram
 indices representing the relevant structures within the dendrogram according
 to the scale of the observation and the affinity criteria used. In the
