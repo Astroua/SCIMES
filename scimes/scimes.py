@@ -7,8 +7,6 @@ from astropy.table.table import Column
 from sklearn import metrics
 from sklearn.cluster.spectral import spectral_clustering
 
-from pdb import set_trace as stop
-
 def mat_smooth(Mat, scalpar = 0, lscal = False):
 
     """

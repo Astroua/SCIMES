@@ -15,11 +15,9 @@ from ._astropy_init import *
 # For egg_info test builds to pass, put package imports here.
 if not _ASTROPY_SETUP_:
     import numpy as np
+    import random
     from matplotlib import pyplot as plt
-    from astrodendro import Dendrogram, ppv_catalog
-    from astropy import units as u
     from sklearn import metrics
     from sklearn.cluster import spectral_clustering
-    from itertools import combinations
-
+    from itertools import combinations, cycle
     from scimes import SpectralCloudstering
