@@ -1,16 +1,18 @@
+"""
+The SCIMES core package
+"""
 import numpy as np
 import random
 from itertools import combinations, cycle
 from matplotlib import pyplot as plt
 from astropy.io import fits
-from astropy.table.table import Column
+from astropy.table import Column
 from sklearn import metrics
 from sklearn.cluster.spectral import spectral_clustering
 
 from pdb import set_trace as stop
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
-
     """
     Estimate the scaling parameter and rescale
     the affinity matrix through a Gaussian kernel.

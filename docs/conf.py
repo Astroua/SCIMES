@@ -54,7 +54,8 @@ MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot',
                 'sklearn', 'sklearn.metrics',
                 'sklearn.cluster', 'sklearn.cluster.spectral_clustering',
                 'astrodendro', 'astrodendro.Dendrogram',
-                'astrodendro.ppv_catalog', 'astropy']
+                'astrodendro.ppv_catalog', 'astropy', 'astropy.io',
+                'astropy.table', 'sklearn.cluster.spectral']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
