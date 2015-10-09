@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.colors as colors
 
 from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
