@@ -49,7 +49,7 @@ Thanks for the help with the documentation to:
 
 
 Citing SCIMES
-------------------
+-------------
 
 If you make use of this package in a publication, please consider adding the
 following acknowledgment:
@@ -64,8 +64,5 @@ an acknowledgment for Astropy (see
 
 Public API
 ----------
-
-.. toctree::
-   :maxdepth: 1
 
 .. automodapi:: scimes

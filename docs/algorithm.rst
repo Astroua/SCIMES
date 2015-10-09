@@ -1,5 +1,5 @@
 The concepts behind the algorithm
-=========================================
+=================================
 This guide provides an intuitive description of the steps followed 
 by ``SCIMES`` to identify structures within a dataset. 
 The full formalism is reported in <SCIMES paper link>.
@@ -16,7 +16,7 @@ the Orion-Monoceros complex imaged in 12CO(1-0) by
 
 
 Building the dendrogram
-------------------------
+-----------------------
 
 .. image:: figures/dendro.png
    :align: center

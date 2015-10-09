@@ -1,14 +1,15 @@
 ``SCIMES`` tutorial
-====================
+===================
 
-In this tutorial we will show the steps necessary to obtain the segmentation of the 
-Orion-Monoceros dataset (:download:`orion_12CO.fits`, public available on 
-`<https://www.cfa.harvard.edu/rtdc/CO/NumberedRegions/DHT27/index.html>`_)
-presented in the ``SCIMES`` paper. Most of this tutorial is collected
-in the script :download:`orion2scimes.py`.
+In this tutorial we will show the steps necessary to obtain the segmentation of
+the Orion-Monoceros dataset (`orion_12CO.fits
+<https://www.cfa.harvard.edu/rtdc/CO/NumberedRegions/DHT27/index.html>`_)
+presented in the ``SCIMES`` paper. Most of this tutorial is collected in the
+script `orion2scimes.py
+<https://github.com/Astroua/SCIMES/blob/master/scimes/orion2scimes.py>`_.
 
 Building the dendrogram and the structure catalog
-----------------------------------------
+-------------------------------------------------
 First, we need to compute the dendrogram and its related catalog,
 i.e. the inputs of  ``SCIMES``. In this example we are dealing with 
 real observations. Therefore, we have to open a FITS file by using,
@@ -53,7 +54,8 @@ can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/la
 Further information about the dendrogram catalog functions can be found here: `Making a catalog <https://dendrograms.readthedocs.org/en/latest/catalog.html#making-a-catalog>`_.
 
 Cluster the dendrogram
-------------------------
+----------------------
+
 The clustering of the dendrogram is obtained through the 
 :class:`~scimes.SpectralCloudstering` class which requires as inputs
 the dendrogram and its related catalog:
@@ -170,7 +172,7 @@ The final number of clusters for the Orion-Monoceros dendrogram using the
 
 
 Clustering results
---------------
+------------------
 The main output of the algorithm, ``clusters``, is a list of dendrogram
 indices representing the relevant structures within the dendrogram according
 to the scale of the observation and the affinity criteria used. In the
@@ -237,10 +239,11 @@ using `APLpy <https://aplpy.github.io/>`_:
 .. image:: figures/orion_volmap.png
    :align: center
 
-where the integrated intensity map can be downloaded from :download:`orion_12CO_mom0.fits`.
+where the integrated intensity map can be downloaded from `orion_12CO_mom0.fits
+<https://www.cfa.harvard.edu/rtdc/CO/NumberedRegions/DHT27/index.html>`_.
 
 Difference between pixel and physical property-based segmentation
--------------------------------------------------------
+-----------------------------------------------------------------
 The above segmentation of the Orion-Monoceros dataset has been obtain
 using pixel-based properties. Nevertheless, if distances are know
 those can be attributed to every structrure within the dendrogram in
@@ -254,7 +257,7 @@ Monoceros are separated:
    :align: center
 
 Affinity matrix choice
-------------------
+----------------------
 By default ``SCIMES`` deals with the "volume" and "luminosity"
 matrices. Nevertheless, every affinity matrix can be provided by the
 user in order to obtain segmentation based on the desired property of
@@ -297,7 +300,7 @@ separated along the line of sight and that, in general, the velocity
 dispersion is not a good criterion for this dataset.
 
 ``SCIMES`` behaviour at low resolution
---------------------------------
+--------------------------------------
 ``SCIMES`` is designed to find well resolved objects, constituted by
 several resolution elements. Nevertheless, it might be applied also to low
 resolution observations. In this case the code essentially behaves as 
