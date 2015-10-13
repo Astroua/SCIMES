@@ -22,6 +22,7 @@ try:
 except ImportError:
     __githash__ = ''
 
+"""
 # set up the test command
 def _get_test_runner():
     import os
@@ -109,6 +110,8 @@ def test(package=None, test_path=None, args=None, plugins=None,
         plugins=plugins, verbose=verbose, pastebin=pastebin,
         remote_data=remote_data, pep8=pep8, pdb=pdb,
         coverage=coverage, open_files=open_files, **kwargs)
+"""
+
 
 if not _ASTROPY_SETUP_:
     import os
