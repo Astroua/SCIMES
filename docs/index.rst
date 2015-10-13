@@ -65,3 +65,5 @@ Public API
 ----------
 
 .. automodapi:: scimes
+
+   :no-inheritance-diagram:
