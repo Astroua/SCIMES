@@ -19,7 +19,6 @@ Documentation
    installation.rst
    algorithm.rst
    tutorial.rst
-   spectcloud.rst
    
 
 Reporting issues and getting help
