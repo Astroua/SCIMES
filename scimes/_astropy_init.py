@@ -32,6 +32,8 @@ def _get_test_runner():
 def test(package=None, test_path=None, args=None, plugins=None,
          verbose=False, pastebin=None, remote_data=False, pep8=False,
          pdb=False, coverage=False, open_files=False, **kwargs):
+"""
+
     """
     Run the tests using `py.test <http://pytest.org/latest>`__. A proper set
     of arguments is constructed and passed to `pytest.main`_.
@@ -102,8 +104,10 @@ def test(package=None, test_path=None, args=None, plugins=None,
         on to the astropy test runner.  This allows use of test-related
         functionality implemented in later versions of astropy without
         explicitly updating the package template.
-
     """
+
+
+"""
     test_runner = _get_test_runner()
     return test_runner.run_tests(
         package=package, test_path=test_path, args=args,
