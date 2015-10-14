@@ -5,7 +5,7 @@ Spectral Clustering for Molecular Emission Segmentation
    :width: 200px
    :align: center
 
-``SCIMES`` idenfifies relevant molecular gas structures within
+``SCIMES`` identifies relevant molecular gas structures within
 dendrograms of emission using the spectral clustering paradigm.
 ``SCIMES`` is useful to decompose objects in complex
 enviroments imaged at high resolution.  
