@@ -50,7 +50,7 @@ setup_cfg = dict(conf.items('metadata'))
 # Mock out the imports
 import mock
 
-MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot',
+MOCK_MODULES = ['matplotlib', 'matplotlib.pyplot',
                 'sklearn', 'sklearn.metrics', 'sklearn.metrics.silhouette_score',
                 'sklearn.base', 'sklearn.base.BaseEstimator', 'sklearn.base.ClusterMixin',
                 'sklearn.utils', 'sklearn.utils.check_random_state',
