@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from astropy.io import fits
 from astropy.table import Column
 from sklearn import metrics
-from spectral import spectral_clustering
+from sklearn.spectral import spectral_clustering
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
     """
