@@ -6,7 +6,7 @@ The "Spectral Clustering for Interstellar Molecular Emission Segmentation" modul
 Documentation
 -------------
 
-For information on installing and using ``SCIMES``, please visit [http://www.scimes.org](http://www.scimes.org)
+For information on installing and using ``SCIMES``, please visit [http://scimes.readthedocs.org/](http://scimes.readthedocs.org/)
 
 Reporting issues
 ----------------
@@ -16,4 +16,10 @@ Please report issues via the [GitHub issue tracker](https://github.com/Astroua/s
 Credits
 -------
 
-This package was developed by:
+This package and the related paper has been written by:
+
+* [Dario Colombo](https://github.com/dcolombo)
+* [Erik Rosolowsky](https://github.com/low-sky)
+* [Adam Ginsburg](https://github.com/keflavich)
+* [Ana Duarte-Cabral](https://github.com/anacabral)
+* [Annie Hughes](Annie.Hughes@irap.omp.eu)

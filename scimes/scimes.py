@@ -1,13 +1,43 @@
+"""
+The SCIMES core package
+"""
 import numpy as np
-import itertools
-from itertools import combinations
+import random
+from itertools import combinations, cycle
 from matplotlib import pyplot as plt
-from astrodendro import Dendrogram, ppv_catalog
+from astropy.io import fits
+from astropy.table import Column
 from sklearn import metrics
-from spectral import spectral_clustering
-
+from .spectral import spectral_clustering
 
 def mat_smooth(Mat, scalpar = 0, lscal = False):
+    """
+    Estimate the scaling parameter and rescale
+    the affinity matrix through a Gaussian kernel.
+    
+    Parameters
+    -----------
+
+    Mat: numpy array
+        The affinity matrix to be rescaled
+
+    scalpar: float
+        User-defined scaling parameter
+
+    lscal: boll
+        Rescale the matrix using a local
+        scaling approach
+        
+    Return
+    -------
+
+    NM: numpy array
+        Rescaled affinity matrix
+
+    sigmas: float
+        The estimated scaling parameter
+
+    """
     
     # Using estimated global scaling    
     if scalpar == 0 and lscal == False:
@@ -51,6 +81,35 @@ def mat_smooth(Mat, scalpar = 0, lscal = False):
 
 def aff_matrix(allleavidx, alllevels, dictparents, dictprops):
 
+    """
+    Generate the affinity matrices
+    
+    Parameters
+    -----------
+
+    allleavidx: list
+        List of all leaf indexes within the
+        dendrogram
+
+    alllevels: list
+        Dendrogram levels of all structures
+
+    dictparents: dictionary
+        Parents and ancestors of all leaves
+        within the dendrogram
+
+    dictprops: dictionary
+        Properties of all leaf parents and
+        ancestors within the dendrogram
+        
+    Return
+    -------
+
+    WAs: numpy array
+        Volume and luminosity affinity matrices
+
+    """
+    
     print "- Creating affinity matrices"
 
     num = len(allleavidx)        
@@ -102,6 +161,29 @@ def aff_matrix(allleavidx, alllevels, dictparents, dictprops):
 
 
 def guessk(Mat, thresh = 0.2):
+
+    """
+    Guess the number of clusters by couting
+    the connected blocks in the affinity matrix
+    
+    Parameters
+    -----------
+
+    Mat: numpy array
+        The rescaled affinity matrix to guess the
+        number of cluster from
+
+    thresh: float
+        The threshold to mask the matrix and count
+        the blocks
+        
+    Return
+    -------
+
+    kguess: int
+        Number of guessed clusters
+
+    """
     
     M = 1*Mat
     M[M < thresh] = 0
@@ -146,6 +228,38 @@ def guessk(Mat, thresh = 0.2):
 
 
 def clust_cleaning(allleavidx, allclusters, dictpars, dictchilds):
+
+    """
+    Remove clusters that do not corresponds to
+    isolated dendrogram branches
+    
+    Parameters
+    -----------
+
+    allleavidx: list
+        List of all leaf indexes within the
+        dendrogram
+
+    allclusters: list
+        List of dendrogram indexes that
+        correspond to significant objects
+        (i.e. clusters)
+
+    dictpars: dictionary
+        Parents and ancestors of all leaves
+        within the dendrogram
+
+    dictchilds: dictionary
+        Children of all branches
+        within the dendrogram
+        
+    Return
+    -------
+
+    cores_idx: list
+        The final cluster dendrogram indexes
+
+    """
         
     cores_idx = []
       
@@ -217,6 +331,78 @@ def clust_cleaning(allleavidx, allclusters, dictpars, dictchilds):
 
 
 def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars, ssingle, locscal, blind):    
+
+    """
+    SCIMES main function. It collects parents/children
+    of all structrures within the dendrogram, and their
+    properties. It calls the affinity matrix-related
+    functions (for creation, rescaling, cluster counting),
+    and it runs several time the actual spectral clustering
+    routine by calculating every time the silhouette of the
+    current configuration. Input parameter are passed by the
+    SpectralCloudstering class.
+    
+    Parameters
+    -----------
+
+    dendrogram: 'astrodendro.dendrogram.Dendrogram' instance
+        The dendrogram to clusterize
+
+    catalog: 'astropy.table.table.Table' instance
+        A catalog containing all properties of the dendrogram
+        structures. Generally generated with ppv_catalog module
+
+    criteria: list
+        Defaul clustering criteria to use,
+        0 = volume, 1 = luminosity
+
+    user_k: int
+        The expected number of clusters, if not provided
+        it will be guessed automatically through the eigenvalues
+        of the unsmoothed affinity matrix
+
+    user_ams: numpy array
+        User provided affinity matrix. Whether this is not
+        furnish it is automatically generated through the
+        volume and/or luminosity criteria
+
+    user_scalpars: list of floats
+        User-provided scaling parameters to smooth the
+        affinity matrices
+
+    locscal: bool
+        Smooth the affinity matrices using a local
+        scaling technique
+    
+    ssingles: bool
+        Consider the single, isolated leaves as
+        individual 'clusters'. Useful for low
+        resolution data where the beam size
+        corresponds to the size of a Giant
+        Molecular Cloud
+    
+    blind: bool
+        Show the affinity matrices. 
+        Matplotlib required
+
+    Return
+    -------
+
+    clusts: list
+        The dendrogram branch indexes corresponding to the
+        identified clusters
+
+    AMs: numpy array
+        The affinity matrices calculated by the algorithm
+    
+    escalpars: list
+        Estimated scaling parameters for the different
+        affinity matrixes
+    
+    silhoutte: float
+        Silhouette of the best cluster configuration
+
+    """
 
     # Collecting all connectivity information into more handy lists
     all_structures_idx = range(len(catalog['radius'].data))
@@ -308,8 +494,30 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
      
     # Generating affinity matrices if not provided
     if user_ams == None:
+
         AMs = aff_matrix(all_leav_idx, all_levels, dict_parents, dict_props)
+
+        if blind == False:
+            
+            # Showing the volume and luminosity affinity matrices
+            fig = plt.figure(figsize=(12, 6))
+
+            ax1 = fig.add_subplot(121)
+            m1 = ax1.imshow(AMs[0,:,:], interpolation = 'nearest')
+            ax1.set_title('"Volume" affinity matrix', fontsize = 'medium')
+            ax1.set_xlabel('leaf index')
+            ax1.set_ylabel('leaf index')    
+            cb1 = plt.colorbar(m1)
+
+            ax2 = fig.add_subplot(122)
+            m2 = ax2.imshow(AMs[1,:,:], interpolation = 'nearest')
+            ax2.set_xlabel('leaf index')
+            ax2.set_ylabel('leaf index')        
+            ax2.set_title('"Luminosity" affinity matrix', fontsize = 'medium')
+            cb2 = plt.colorbar(m2)
+        
     else:
+
         AMs = user_ams
 
 
@@ -344,7 +552,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     escalpars = []
     for cr in criteria:
 
-        print "-- Smoothing ", cr, " matrix"
+        print "-- Rescaling ", cr, " matrix"
         
         if criteria.index(cr) == 0:
             AM, sigma = mat_smooth(AMs[cr,:,:], scalpar = scpars[cr], lscal = locscal)
@@ -365,17 +573,14 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     rAM = rAM[:,mul_leav_mat]
 
     if blind == False:
-    
-        # Showing the reduced affinity matrix
-        plt.matshow(rAM)
-        plt.colorbar()
-        plt.title('Reduced Affinity Matrix') 
             
         # Showing the final affinity matrix
         plt.matshow(AM)
         plt.colorbar()
         plt.title('Final Affinity Matrix')
-    
+        plt.xlabel('leaf index')
+        plt.ylabel('leaf index')
+
       
     # Guessing the number of clusters
     # if not provided
@@ -385,8 +590,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     else:
         kg = user_k-len(two_clust_idx)
 
-    print '-- Reduced matrix number of clusters =', kg                    
-    print '-- Total guessed number of clusters =', kg+len(two_clust_idx)
+    print '-- Guessed number of clusters =', kg+len(two_clust_idx)
     
     if kg > 1:
 
@@ -470,56 +674,56 @@ class SpectralCloudstering(object):
         structures. Generally generated with ppv_catalog module
 
     cl_volume: bool
-    Clusterize the dendrogram using the 'volume' criterium 
+        Clusterize the dendrogram using the 'volume' criterium 
 
     cl_luminosity: bool
-    Clusterize the dendrogram using the 'luminosity' criterium        
+        Clusterize the dendrogram using the 'luminosity' criterium        
 
     user_k: int
-    The expected number of clusters, if not provided
-    it will be guessed automatically through the eigenvalues
-    of the unsmoothed affinity matrix
+        The expected number of clusters, if not provided
+        it will be guessed automatically through the eigenvalues
+        of the unsmoothed affinity matrix
 
     user_ams: numpy array
-    User provided affinity matrix. Whether this is not
-    furnish it is automatically generated through the
-    volume and/or luminosity criteria
+        User provided affinity matrix. Whether this is not
+        furnish it is automatically generated through the
+        volume and/or luminosity criteria
 
     user_scalpars: list of floats
-    User-provided scaling parameters to smooth the
-    affinity matrices
+        User-provided scaling parameters to smooth the
+        affinity matrices
 
     locscaling: bool
-    Smooth the affinity matrices using a local
-    scaling technique
+        Smooth the affinity matrices using a local
+        scaling technique
     
     savesingles: bool
-    Consider the single, isolated leaves as
-    individual "clusters". Useful for low
-    resolution data where the beam size
-    corresponds to the size of a Giant
-    Molecular Cloud.
+        Consider the single, isolated leaves as
+        individual 'clusters'. Useful for low
+        resolution data where the beam size
+        corresponds to the size of a Giant
+        Molecular Cloud.
     
     blind: bool
-    Show the affinity matrices. 
-    Matplotlib required.
+        Show the affinity matrices. 
+        Matplotlib required.
 
     Return
     -------
 
     clusters: list
-    The dendrogram branch indexes corresponding to the
-    identified clusters
+        The dendrogram branch indexes corresponding to the
+        identified clusters
 
     affmats: numpy array
-    The affinity matrices calculated by the algorithm
+        The affinity matrices calculated by the algorithm
     
     escalpars: list
-    Estimated scaling parameters for the different
-    affinity matrixes
+        Estimated scaling parameters for the different
+        affinity matrixes
     
     silhouette: float
-    Silhouette of the best cluster configuration
+        Silhouette of the best cluster configuration
         
     """
 
@@ -536,6 +740,7 @@ class SpectralCloudstering(object):
             print("WARNING: adding volume = pi * radius^2 * v_rms to the catalog.")
             catalog.add_column(Column(catalog['radius']**2*np.pi *
                                       catalog['v_rms'], 'volume'))
+        
         self.cl_volume = cl_volume
         self.cl_luminosity = cl_luminosity
         self.user_k = user_k or 0
@@ -552,8 +757,17 @@ class SpectralCloudstering(object):
         if self.cl_luminosity:
             self.criteria.append(1)
 
-        # default colors in case plot_connected_colors is called before showdendro
-        self.colors = itertools.cycle('rgbcmyk')
+        if self.cl_volume == False:
+            print("WARNING: clustering will be performed on the Luminosity matrix only")
+
+        if self.cl_luminosity == False:
+            print("WARNING: clustering will be performed on the Volume matrix only")
+
+        if self.cl_luminosity and self.cl_volume:
+            print("WARNING: clustering will be performed on the Aggregated matrix")
+
+        # Default colors in case plot_connected_colors is called before showdendro
+        self.colors = cycle('rgbcmyk')
         
         self.clusters, self.affmats, self.escalpars, self.silhouette = cloudstering(self.dendrogram,
                                                                                     self.catalog,
@@ -562,8 +776,16 @@ class SpectralCloudstering(object):
                                                    self.savesingles, self.locscaling, self.blind)
 
     def showdendro(self):
+        
+        """
 
-        dendro = self.dendro
+        Show the clustered dendrogram
+        every color correspond to a
+        different cluster
+
+        """
+
+        dendro = self.dendrogram
         cores_idx = self.clusters
 
 
@@ -572,7 +794,7 @@ class SpectralCloudstering(object):
                  
         p = dendro.plotter()
 
-        fig = plt.figure(figsize=(20, 12))
+        fig = plt.figure(figsize=(14, 8))
         ax = fig.add_subplot(111)
                 
         ax.set_yscale('log')
@@ -598,6 +820,7 @@ class SpectralCloudstering(object):
         self.colors = cols
 
 
+
     def plot_connected_clusters(self, **kwargs):
         from plotting import dendroplot_clusters
 
@@ -605,25 +828,31 @@ class SpectralCloudstering(object):
                                    colors=self.colors,
                                    **kwargs)
 
-    def make_assignment_cube(self, outfileprefix, header, tag = '_',
-                             collapse = True):
+
+    def asgncube(self, header, collapse = True):
+
         """
         Create a label cube with only the cluster (cloudster) IDs included, and
         write to disk.
 
         Parameters
         ----------
-        outfileprefix : str
-            The prefix for the output filename.  The file has a format
-            `outfileprefix+'_asgn_'+tag+'.fits'`
         header : `fits.Header`
             The header of the output assignment cube.  Should be the same
             header that the dendrogram was generated from
-        tag : str
+            
         collapse : bool
+            Collapsed (2D) version of the assignment cube
+
+        Return
+        -------
+        asgn = 'astropy.io.fits.PrimaryHDU' instance
+            Cube of labels
+
         """
 
         data = self.dendrogram.data.squeeze()
+        dendro = self.dendrogram
         
         # Making the assignment cube
         asgn = np.zeros(data.shape, dtype=np.int32)
@@ -634,13 +863,14 @@ class SpectralCloudstering(object):
 
         # Write the fits file
         self.asgn = fits.PrimaryHDU(asgn.astype('short'), header)
-        
-        self.asgn.writeto(outfileprefix+'_asgn_'+tag+'.fits', clobber=True)
 
         # Collapsed version of the asgn cube
         if collapse:
 
-            asgn_map = np.amax(asgn.data, axis = 0) 
+            asgn_map = np.amax(self.asgn.data, axis = 0) 
 
             plt.matshow(asgn_map, origin = "lower")
-            plt.colorbar()
+            cbar = plt.colorbar()
+            cbar.ax.get_yaxis().labelpad = 15
+            cbar.ax.set_ylabel('Structure label', rotation=270)
+

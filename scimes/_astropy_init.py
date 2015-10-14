@@ -136,3 +136,4 @@ if not _ASTROPY_SETUP_:
                     del e
                 except:
                     raise orig_error
+
