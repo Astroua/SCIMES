@@ -50,7 +50,7 @@ setup_cfg = dict(conf.items('metadata'))
 # Mock out the imports
 import mock
 
-MOCK_MODULES = ['matplotlib', 'matplotlib.pyplot',
+MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot',
                 'sklearn', 'sklearn.metrics', 'sklearn.metrics.silhouette_score',
                 'sklearn.base', 'sklearn.base.BaseEstimator', 'sklearn.base.ClusterMixin',
                 'sklearn.utils', 'sklearn.utils.check_random_state',
@@ -59,7 +59,6 @@ MOCK_MODULES = ['matplotlib', 'matplotlib.pyplot',
                 'sklearn.metrics.pairwise', 'sklearn.metrics.pairwise.pairwise_kernels',
                 'sklearn.neighbors', 'sklearn.neighbors.kneighbors_graph',
                 'sklearn.manifold', 'sklearn.manifold.spectral_embedding',
-                'sklearn.cluster.k_means_', 'sklearn.cluster.k_means_.k_means'
                 'astropy', 'astropy.io', 'astropy.table']
 
 for mod_name in MOCK_MODULES:
