@@ -53,8 +53,8 @@ can be obtained by the `ppv_catalog() <https://dendrograms.readthedocs.org/en/la
 
 Further information about the dendrogram catalog functions can be found here: `Making a catalog <https://dendrograms.readthedocs.org/en/latest/catalog.html#making-a-catalog>`_.
 
-Cluster the dendrogram
-----------------------
+Clustering the dendrogram
+-------------------------
 
 The clustering of the dendrogram is obtained through the 
 :class:`~scimes.SpectralCloudstering` class which requires as inputs
