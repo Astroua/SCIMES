@@ -51,11 +51,16 @@ setup_cfg = dict(conf.items('metadata'))
 import mock
 
 MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot',
-                'sklearn', 'sklearn.metrics',
-                'sklearn.cluster', 'sklearn.cluster.spectral_clustering',
-                'astrodendro', 'astrodendro.Dendrogram',
-                'astrodendro.ppv_catalog', 'astropy', 'astropy.io',
-                'astropy.table', 'sklearn.cluster.spectral']
+                'sklearn', 'sklearn.metrics', 'sklearn.metrics.silhouette_score',
+                'sklearn.base', 'sklearn.base.BaseEstimator', 'sklearn.base.ClusterMixin',
+                'sklearn.utils', 'sklearn.utils.check_random_state',
+                'sklearn.utils.as_float_array', 'sklearn.utils.deprecated',
+                'sklearn.utils.extmath', 'sklearn.utils.extmath.norm',
+                'sklearn.metrics.pairwise', 'sklearn.metrics.pairwise.pairwise_kernels',
+                'sklearn.neighbors', 'sklearn.neighbors.kneighbors_graph',
+                'sklearn.manifold', 'sklearn.manifold.spectral_embedding',
+                'sklearn.cluster.k_means_', 'sklearn.cluster.k_means_.k_means',
+                'astropy', 'astropy.io', 'astropy.table']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
