@@ -59,7 +59,7 @@ MOCK_MODULES = ['warnings', 'numpy', 'matplotlib', 'matplotlib.pyplot',
                 'sklearn.metrics.pairwise', 'sklearn.metrics.pairwise.pairwise_kernels',
                 'sklearn.neighbors', 'sklearn.neighbors.kneighbors_graph',
                 'sklearn.manifold', 'sklearn.manifold.spectral_embedding',
-                'sklearn.cluster.k_means_', 'sklearn.cluster.k_means_.k_means',
+                'sklearn.cluster.k_means_',
                 'astropy', 'astropy.io', 'astropy.table']
 
 for mod_name in MOCK_MODULES:
