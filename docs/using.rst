@@ -107,7 +107,7 @@ optional inputs:
   estimates them directly from the affinity matrices.
 
 * ``user_iter``: number of k-means iterations to be performed. By default,
-  ``user_iter = 200``. This value can be increased, increasing the
+  ``user_iter = 100``. This value can be increased, increasing the
   k-means stability and the computation time.
 
 * ``rms``: the noise level of the observation. If provided,
