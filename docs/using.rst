@@ -71,14 +71,20 @@ the `element-wise multiplication of the luminosity and the volume
 matrix <http://scimes.readthedocs.org/en/latest/algorithm.html#from-the-graph-to-the-affinity-matrix>`_.  If instead you want
 to perform the clustering based on volume only, ignoring luminosity, this can be achieved by setting:  
 
-    >>> dclust = SpectralCloudstering(d, cat, cl_luminosity = False)
+    >>> dclust = SpectralCloudstering(d, cat, criteria = ['volume'])
 
 or if only the luminosity matrix is needed:
 
-    >>> dclust = SpectralCloudstering(d, cat, cl_volume = False)
+    >>> dclust = SpectralCloudstering(d, cat, criteria = ['luminosity'])
 
 The :class:`~scimes.SpectralCloudstering` class provides several
 optional inputs:
+
+* ``criteria``: the criteria used to cluster the dendrogram. The names
+  listed must correspond to structure properties present in the catalog.
+  The user can provide as many criteria as needed, ``SCIMES`` will
+  generate affinity matrices for each of them and the aggregate
+  matrix for the final clustering.
 
 * ``user_k``: the number of clusters expected can be provided as an
   input. In this case, ``SCIMES`` will not make any attempt to guess
@@ -100,6 +106,18 @@ optional inputs:
   might influence the final result. If not provided, ``SCIMES``
   estimates them directly from the affinity matrices.
 
+* ``user_iter``: number of k-means iterations to be performed. By default,
+  ``user_iter = 200``. This value can be increased, increasing the
+  k-means stability and the computation time.
+
+* ``rms``: the noise level of the observation. If provided,
+  ``SCIMES`` calculates the scaling parameter above a certain 
+  signal-to-noise ratio threshold within the dendrogram. 
+  The threshold expressed is expressed as ``s2nlim*rms``. 
+  ``s2nlim`` is set by default to 3, but it can also by provided as
+  input. THIS IS A STRONGLY RECOMMENED INPUT SINCE IT INCREASES 
+  THE STABILITY OF THE CODE.
+
 * ``savesingles``: by definition single leaves do not form clusters,
   since clusters are constituted by at least two objects. Therefore, they
   are eliminated by default from the final cluster counts. For some
@@ -107,7 +125,16 @@ optional inputs:
   single leaves might represent relevant entities that need to be
   retained. This keyword forces ``SCIMES`` to consider unclustered and
   isolated leaves as independent clusters that will appear in the
-  final cluster index catalog.       
+  final cluster index catalog.
+ 
+* ``keepall``: when a cluster of leaves cannot be attributed to a single
+  isolated branch containing only the leaves of the cluster, the cluster
+  leaves are pruned until this condition is satisfied. The final branch 
+  representing the cluster will have the larger amout of leaves of the 
+  selected cluster. During this operation several isolated branches within
+  the same cluster might result unassignible. By triggering ``keepall``,
+  those branches are retained and assigned to separed objects.
+
 
 Clustering results
 ------------------
