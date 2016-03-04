@@ -50,7 +50,7 @@ cat = ppv_catalog(d, metadata)
 #     Running SCIMES
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
 print "Running SCIMES"
-dclust = SpectralCloudstering(d, cat, cl_luminosity = False)
+dclust = SpectralCloudstering(d, cat, criteria = ['volume'])
 
 print "Visualize the clustered dendrogram"
 dclust.showdendro()
