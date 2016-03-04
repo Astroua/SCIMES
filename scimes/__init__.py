@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-__version__ = "0.0.0"
+__version__ = "0.2.0"
 
 """
 This is an Astropy affiliated package.
