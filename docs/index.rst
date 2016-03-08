@@ -50,12 +50,13 @@ Thanks for the help with the documentation to:
 Citing SCIMES
 -------------
 
-If you make use of this package in a publication, please consider adding the
-following acknowledgment:
+If you make use of this package in a publication, please add the following
+acknowledgment:
 
 *This research made use of SCIMES, a Python package to find relevant structures
-into dendrograms of molecular gas emission using the spectral clustering approach* 
-or the related paper.
+into dendrograms of molecular gas emission using the spectral clustering
+approach* and cite the `related paper, 2015MNRAS.454.2067C
+<http://esoads.eso.org/abs/2015MNRAS.454.2067C>`__
 
 ``SCIMES`` is an astropy affiliated-package. Please also consider adding 
 an acknowledgment for Astropy (see
