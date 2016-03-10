@@ -1,5 +1,6 @@
 import numpy as np
 
+from matplotlib import pyplot as plt
 from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
 from astropy.io import fits
