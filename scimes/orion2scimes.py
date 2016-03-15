@@ -82,7 +82,7 @@ for c in clusts:
 	mask_coll = np.amax(mask_hdu.data, axis = 0)
 	mask_coll_hdu = fits.PrimaryHDU(mask_coll.astype('short'), hdu.header)
 	                
-	fig.show_contour(mask_coll_hdu, colors=colors[count], linewidths=1, convention='wells')
+	fig.show_contour(mask_coll_hdu, colors=colors[count], linewidths=1, convention='wells', levels = [0])
 
 	count = count+1
 	        
