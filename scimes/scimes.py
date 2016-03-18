@@ -959,7 +959,7 @@ class SpectralCloudstering(object):
                                    **kwargs)
 
 
-    def asgncube(self, header, collapse = True):
+    def asgncube(self, header = None, collapse = True):
 
         """
         Create a label cube with only the cluster (cloudster) IDs included, and
@@ -990,9 +990,11 @@ class SpectralCloudstering(object):
         for i in self.clusters:
             asgn[dendro[i].get_mask(shape = asgn.shape)] = i
 
-
         # Write the fits file
-        self.asgn = fits.PrimaryHDU(asgn.astype('short'), header)
+        if header:
+            self.asgn = fits.PrimaryHDU(asgn.astype('short'), header)
+        else:
+            self.asgn = fits.PrimaryHDU(asgn.astype('short'))            
 
         # Collapsed version of the asgn cube
         if collapse:
