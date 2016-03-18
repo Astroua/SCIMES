@@ -856,7 +856,7 @@ class SpectralCloudstering(object):
 
         # Checking for user defined criteria existence in the catalog
         for i, crit in enumerate(criteria):
-            if crit not in catalog.colnames:
+            if (crit not in catalog.colnames) & (crit != 'volume') & (crit != 'luminosity'):
                 print("WARNING: "+crit+" not in the catalog, removed from the criteria list")
                 criteria.pop(criteria.index(crit))
 
