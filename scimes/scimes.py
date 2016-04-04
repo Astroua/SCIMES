@@ -930,17 +930,16 @@ class SpectralCloudstering(object):
         ax.set_yscale('log')
                 
         cols = []
-
-        
+ 
         # Plot the whole tree
 
         p.plot_tree(ax, color='black')
 
-        for i in range(len(cores_idx)):
+        for c in cores_idx:
 
             col = '#%02X%02X%02X' % (r(),r(),r())
             cols.append(col)
-            p.plot_tree(ax, structure=dendro[cores_idx[i]], color=cols[i], lw=3)
+            p.plot_tree(ax, structure=[dendro[c]], color=col, lw=3)
 
         ax.set_title("Final clustering configuration")
 
