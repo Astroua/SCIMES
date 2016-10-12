@@ -692,7 +692,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
             try:
                      
                 all_clusters, evecs = spectral_clustering(rAM, n_clusters=ks, assign_labels = 'kmeans', 
-                    eigen_solver='arpack', n_init = user_iter)
+                    eigen_solver='arpack', n_init = user_iter, random_state = 222)
                 sil = metrics.silhouette_score(evecs, np.asarray(all_clusters), metric='euclidean')
 
                 clust_configs.append(all_clusters)
@@ -745,7 +745,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     for oldclust in oldclusts:
         fclusts_idx[fclusts_idx == oldclust] = np.max(fclusts_idx)+1
 
-    _, evecs = spectral_clustering(rAM, n_clusters=len(np.unique(fclusts_idx)), assign_labels = 'kmeans', eigen_solver='arpack', n_init = 1)
+    _, evecs = spectral_clustering(rAM, n_clusters=len(np.unique(fclusts_idx)), assign_labels = 'kmeans', eigen_solver='arpack', n_init = 1, random_state = 222)
     sil = metrics.silhouette_score(evecs, fclusts_idx, metric='euclidean')
 
     print "-- Final clustering configuration silhoutte", sil
