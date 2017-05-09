@@ -83,12 +83,12 @@ def mat_smooth(Mat, S2Nmat, s2nlim = 3, scalpar = 0, lscal = False):
         sigma = psigmas[sel_diff_ind]**2
     
 
-        print '-- Estimated scaling parameter:', np.sqrt(sigma)
+        print('-- Estimated scaling parameter:', np.sqrt(sigma))
 
     # Using local scaling        
     if scalpar == 0 and lscal == True:
 
-        print "-- Local scaling"
+        print("-- Local scaling")
 
         dr = np.std(Mat, axis=0)
         sigmar = np.tile(dr,(Mat.shape[0],1))
@@ -98,7 +98,7 @@ def mat_smooth(Mat, S2Nmat, s2nlim = 3, scalpar = 0, lscal = False):
     # Using user-defined scaling parameter
     if scalpar != 0:
 
-        print "-- User defined scaling parameter:", scalpar
+        print("-- User defined scaling parameter:", scalpar)
         sigma = scalpar**2
 
             
@@ -141,7 +141,7 @@ def aff_matrix(allleavidx, alllevels, dictparents, props):
 
     """
     
-    print "- Creating affinity matrices"
+    print("- Creating affinity matrices")
 
     num = len(allleavidx)        
     WAs = np.zeros((len(props),num,num))
@@ -372,7 +372,7 @@ def clust_cleaning(allleavidx, allclusters, dictpars, dictchilds, dictancests, k
             
         else:
 
-            print "Unassignable cluster ", cluster
+            print("Unassignable cluster ", cluster)
             
     return cores_idx
 
@@ -609,7 +609,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     # otherwise return everything as clusters ("savesingles").
     if AMs.shape[1] <= 2:
 
-        print '--- Not necessary to cluster. "savesingles" keyword triggered.'
+        print('--- Not necessary to cluster. "savesingles" keyword triggered.')
 
         all_leaves = []
         for leaf in dendrogram.leaves:
@@ -627,19 +627,19 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     scpars = np.zeros(len(criteria))
     
     if user_scalpars is not None:
-        print "- Using user-provided scaling parameters"
+        print("- Using user-provided scaling parameters")
         user_scalpars = np.asarray(user_scalpars)
         scpars[0:len(user_scalpars)] = user_scalpars
                 
 
-    print "- Start spectral clustering"
+    print("- Start spectral clustering")
 
     # Selecting the criteria and merging the matrices    
     escalpars = []
     AM = np.ones(AMs[0,:,:].shape)
     for i, crit in enumerate(criteria):
 
-        print "-- Rescaling ", crit, " matrix"
+        print("-- Rescaling ", crit, " matrix")
         AMc, sigma = mat_smooth(AMs[i,:,:], S2Nmat, s2nlim = s2nlim, 
             scalpar = scpars[i], lscal = locscal)        
         AM = AM*AMc
@@ -673,11 +673,11 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     else:
         kg = user_k-len(two_clust_idx)
 
-    print '-- Guessed number of clusters =', kg+len(two_clust_idx)
+    print('-- Guessed number of clusters =', kg+len(two_clust_idx))
     
     if kg > 1:
 
-        print "-- Number of k-means iteration:", user_iter
+        print("-- Number of k-means iteration:", user_iter)
 
         # Find the best cluster number
         sils = []
@@ -705,20 +705,20 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
                     
         # Use the best cluster number to generate clusters                    
         best_ks = sils.index(max(sils))+min_ks
-        print "-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks+len(two_clust_idx)
+        print("-- Best cluster number found through SILHOUETTE (", max(sils),")= ", best_ks+len(two_clust_idx))
         silhoutte = max(sils)
         
         all_clusters = clust_configs[np.argmax(sils)]
                         
     else:
 
-        print '-- Not necessary to cluster'
+        print('-- Not necessary to cluster')
         all_clusters = np.zeros(len(all_leaves_idx), dtype = np.int32)
 
     clust_branches = clust_cleaning(mul_leav_idx, all_clusters, dict_parents, dict_children, dict_ancestors, keepall = keepall)
     clusts = clust_branches + two_clust_idx
 
-    print "-- Final cluster number (after cleaning)", len(clusts)
+    print("-- Final cluster number (after cleaning)", len(clusts))
     
 
     # Calculate the silhouette after cluster cleaning
@@ -748,7 +748,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
     _, evecs = spectral_clustering(rAM, n_clusters=len(np.unique(fclusts_idx)), assign_labels = 'kmeans', eigen_solver='arpack', n_init = 1, random_state = 222)
     sil = metrics.silhouette_score(evecs, fclusts_idx, metric='euclidean')
 
-    print "-- Final clustering configuration silhoutte", sil
+    print("-- Final clustering configuration silhoutte", sil)
 
 
     # Add to the cluster list the single leaves, if required
@@ -768,7 +768,7 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
 
         clusts = clusts + unclust_leaves
 
-        print "- Unclustered leaves added. Final cluster number", len(clusts)
+        print("- Unclustered leaves added. Final cluster number", len(clusts))
     
     return clusts, AMs, escalpars, silhoutte 
 
