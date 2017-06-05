@@ -147,7 +147,7 @@ def aff_matrix(allleavidx, alllevels, dictparents, props):
     WAs = np.zeros((len(props),num,num))
         
     # Let's save one for loop
-    combs = list(combinations(xrange(num), 2))
+    combs = list(combinations(range(num), 2))
     ncombs = len(combs)
     
     # Going through the branch
