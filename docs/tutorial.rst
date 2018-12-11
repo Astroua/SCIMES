@@ -290,7 +290,7 @@ And for the trunks assignment cube:
    :align: center
 
 A nice representation of the decomposed objects might be obtained by
-using `APLpy <https://aplpy.github.io/>`_. Here the contours represents the identitied clusters:
+using `APLpy <https://aplpy.github.io/>`_. Here the contours represent the identitied clusters:
 
 .. image:: figures/orion_volmap.png
    :align: center
