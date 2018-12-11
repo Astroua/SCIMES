@@ -5,7 +5,7 @@ from astrodendro import Dendrogram, ppv_catalog
 from astropy import units as u
 from astropy.io import fits
 
-from scimes_v032 import SpectralCloudstering
+from scimes import SpectralCloudstering
 
 import aplpy
 
