@@ -16,7 +16,7 @@ real observations. Therefore, we have to open a FITS file by using,
 for example, ``astropy`` :
 
     >>> from astropy.io import fits
-    >>> hdu = fits.getdata('orion_12CO.fits')[0]
+    >>> hdu = fits.open('orion_12CO.fits')[0]
     >>> data = hdu.data
     >>> hd = hdu.header
 
@@ -78,7 +78,8 @@ optional inputs:
 
 * ``criteria``: the criteria used to cluster the dendrogram. The names
   listed must correspond to structure properties present in the catalog.
-  The user can provide as many criteria as needed, ``SCIMES`` will
+  In principle, any (meaningful) catalog property can work as clustering
+  criterion. The user can provide as many criteria as needed, ``SCIMES`` will
   generate affinity matrices for each of them and the aggregate
   matrix for the final clustering.
 
@@ -113,23 +114,34 @@ optional inputs:
   ``s2nlim`` is set by default to 3, but it can also by provided as
   input. THIS IS A STRONGLY RECOMMENED INPUT SINCE IT INCREASES 
   THE STABILITY OF THE CODE.
-
-* ``savesingles``: by definition single leaves do not form clusters,
+  
+* ``save_isol_leaves``: by definition single leaves do not form clusters,
   since clusters are constituted by at least two objects. Therefore, they
   are eliminated by default from the final cluster counts. For some
   applications, as in case of low resolution observations,
   single leaves might represent relevant entities that need to be
   retained. This keyword forces ``SCIMES`` to consider unclustered and
-  isolated leaves as independent clusters that will appear in the
-  final cluster index catalog.
+  isolated leaves (e.g. without parent, trunks) as independent clusters that 
+  will appear in the final cluster index catalog.
+  
+* ``save_clust_leaves``: when triggered it forces ``SCIMES`` to retain
+  as ``clusters`` the intra-clustered leaves usually discarded as noise.
+  This keyword will not include the isolated leaves without parents, as
+  ``save_isol_leaves`` option.
+  
+* ``save_all_leaves``: it triggers both ``save_isol_leaves`` and 
+  ``save_clust_leaves`` options.  
  
-* ``keepall``: when a cluster of leaves cannot be attributed to a single
+* ``save_branches``: when a cluster of leaves cannot be attributed to a single
   isolated branch containing only the leaves of the cluster, the cluster
   leaves are pruned until this condition is satisfied. The final branch 
   representing the cluster will have the larger amout of leaves of the 
   selected cluster. During this operation several isolated branches within
-  the same cluster might result unassignible. By triggering ``keepall``,
+  the same cluster might result unassignible. By triggering ``save_branches``,
   those branches are retained and assigned to separed objects.
+  
+* ``save_all_leaves``: it triggers both ``save_all_leaves`` and 
+  ``save_branches`` options.
 
 As an example, we run  ``SpectralCloudstering`` on the Orion-Monoceros
 dataset, using the "volume" matrix only without including distance
@@ -194,7 +206,22 @@ The final number of clusters for the Orion-Monoceros dendrogram using the
 "volume" criterion is 41:
 
     >>> -- Final cluster number (after cleaning) 41
+    
+If, for example, the ``save_all`` option is selected, the following messages
+will appear:
 
+    >>> SAVE_BRANCHES triggered, all isolated branches will be retained
+    >>> -- Final cluster number (after cleaning) 41
+    >>> -- Final clustering configuration silhoutte 0.541521
+    >>> SAVE_ISOL_LEAVES triggered. Isolated leaves added.
+    >>> -- Total cluster number 196
+    >>> SAVE_CLUST_LEAVES triggered. Unclustered leaves added.
+    >>> -- Total cluster number 257
+
+Once the unclustered branches are added, the silhoutte is recalculated
+for the new clustering configuration. Since the configuration obtained
+with the added clusters is not ideal, the silhouette value can be largely
+reduced.
 
 Clustering results
 ------------------
