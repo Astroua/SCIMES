@@ -47,8 +47,8 @@ filename = 'orion_12CO'
 #%&%&%&%&%&%&%&%&%&%&%&%
 #    Make dendrogram
 #%&%&%&%&%&%&%&%&%&%&%&%
-print 'Make dendrogram from the full cube'
-hdu = fits.open('./scimes/'+filename+'.fits')[0]
+print('Make dendrogram from the full cube')
+hdu = fits.open('../'+filename+'.fits')[0]
 data = hdu.data
 hd = hdu.header
 
@@ -63,7 +63,7 @@ d = Dendrogram.compute(data, min_value=sigma, \
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
 #   Generate the catalog
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
-print "Generate a catalog of dendrogram structures"
+print("Generate a catalog of dendrogram structures")
 metadata = {}
 metadata['data_unit'] = u.Jy #This should be Kelvin (not yet implemented)!
 cat = ppv_catalog(d, metadata)
@@ -72,17 +72,17 @@ cat = ppv_catalog(d, metadata)
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
 #     Running SCIMES
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
-print "Running SCIMES"
+print("Running SCIMES")
 dclust = SpectralCloudstering(d, cat, hd, rms=sigma)
 
 
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
 #     Image the result
 #%&%&%&%&%&%&%&%&%&%&%&%&%&%
-print "Visualize the clustered dendrogram"
+print("Visualize the clustered dendrogram")
 dclust.showdendro()
 
-print "Visualize collapsed maps of the assignment cubes"
+print("Visualize collapsed maps of the assignment cubes")
 cubes = [dclust.clusters_asgn,\
 		dclust.leaves_asgn,\
 		dclust.trunks_asgn]
@@ -99,7 +99,7 @@ for cube, title in zip(cubes, titles):
 	plt.ylabel('Y [pixel]')
 
 
-print "Image the results with APLpy"
+print("Image the results with APLpy")
 
 clusts = dclust.clusters
 colors = dclust.colors
@@ -128,3 +128,4 @@ fig.tick_labels.set_yformat('dd')
 
 fig.add_colorbar()
 fig.colorbar.set_axis_label_text(r'[(K km/s)$^{1/2}$]')
+plt.show()
