@@ -24,7 +24,8 @@ from sklearn.utils import check_array, check_symmetric, check_random_state
 from sklearn.manifold._spectral_embedding import _graph_is_connected, _set_diag
 from sklearn.utils._arpack import _init_arpack_v0
 from sklearn.utils.extmath import _deterministic_vector_sign_flip
-from sklearn.utils.fixes import lobpcg
+#from sklearn.utils.fixes import lobpcg
+from scipy.sparse.linalg import lobpcg
 
 
 def spectral_embedding(adjacency, *, 
