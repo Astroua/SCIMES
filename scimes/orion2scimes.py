@@ -1,13 +1,18 @@
 import numpy as np
 
 from matplotlib import pyplot as plt
-from astrodendro import Dendrogram, ppv_catalog
+import matplotlib.axes as maxes
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+from astrodendro import Dendrogram#, ppv_catalog
+from astrodendro_analysis import ppv_catalog
 from astropy import units as u
 from astropy.io import fits
+import astropy.wcs as wcs
 
 from scimes import SpectralCloudstering
 
-import aplpy
+#import aplpy
 
 
 # Function to remove the 3rd dimension in a 
@@ -48,7 +53,7 @@ filename = 'orion_12CO'
 #    Make dendrogram
 #%&%&%&%&%&%&%&%&%&%&%&%
 print('Make dendrogram from the full cube')
-hdu = fits.open('../'+filename+'.fits')[0]
+hdu = fits.open('../%s.fits' % filename)[0]
 data = hdu.data
 hd = hdu.header
 
@@ -99,33 +104,43 @@ for cube, title in zip(cubes, titles):
 	plt.ylabel('Y [pixel]')
 
 
-print("Image the results with APLpy")
+print("Image the results")
+
+from astropy.visualization import simple_norm
 
 clusts = dclust.clusters
 colors = dclust.colors
 # Create Orion integrated intensity map
 mhdu = mom0map(hdu)
-	    
-fig = aplpy.FITSFigure(mhdu, figsize=(8, 6), convention='wells')
-fig.show_colorscale(cmap='gray', vmax=36, stretch = 'sqrt')
+
+norm = simple_norm(mhdu.data, 'sqrt')
+
+w = wcs.WCS(mhdu.header)
+
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(1,1,1,projection=w)
+
+im = ax.imshow(mhdu.data,origin='lower',\
+	interpolation='nearest',cmap='gray',norm=norm)
+
+divider = make_axes_locatable(ax)
+cax = divider.append_axes("right", size="5%", pad=0.05, axes_class=maxes.Axes)
+cbar = fig.colorbar(im, cax=cax, orientation = 'vertical')
+cbar.set_label(r'(K km/s)$^{1/2}$', fontsize = 12)
+
+ax.set_xlabel(r'$l$ [$^{\circ}$]')
+ax.set_ylabel(r'$b$ [$^{\circ}$]')
 
 
 count = 0
 for c in clusts:
 
 	mask = d[c].get_mask()
-	mask_hdu = fits.PrimaryHDU(mask.astype('short'), hdu.header)
+	mask_coll = np.nanmax(mask,axis=0)
 
-	mask_coll = np.amax(mask_hdu.data, axis = 0)
-	mask_coll_hdu = fits.PrimaryHDU(mask_coll.astype('short'), hd2d(hdu.header))
-	                
-	fig.show_contour(mask_coll_hdu, colors=colors[count], linewidths=1, convention='wells', levels = [0])
+	ax.contour(mask_coll, colors=colors[count], linewidths=2, levels = [0])
 
 	count = count+1
-	        
-fig.tick_labels.set_xformat('dd')
-fig.tick_labels.set_yformat('dd')
 
-fig.add_colorbar()
-fig.colorbar.set_axis_label_text(r'[(K km/s)$^{1/2}$]')
+
 plt.show()

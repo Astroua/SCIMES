@@ -564,6 +564,8 @@ def cloudstering(dendrogram, catalog, criteria, user_k, user_ams, user_scalpars,
 
     """
 
+    print('- Collecting connectivity information')
+
     # Collecting all connectivity and other information into more handy lists
     all_structures_idx = np.arange(len(catalog[criteria[0]].data), dtype='int')
 
@@ -1145,9 +1147,9 @@ class SpectralCloudstering(object):
 
         fig = plt.figure(figsize=(14, 8))
         ax = fig.add_subplot(111)
-
-        ax.set_yscale('log')
-
+                
+        #ax.set_yscale('log')
+                
         cols = []
 
         # Plot the whole tree
@@ -1164,7 +1166,7 @@ class SpectralCloudstering(object):
 
         ax.set_xlabel("Structure")
         ax.set_ylabel("Flux")
-
+        
         self.colors = cols
 
         if savefile:
