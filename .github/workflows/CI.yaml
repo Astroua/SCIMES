@@ -33,4 +33,4 @@ jobs:
       - name: Run tests
         run: |
           # use pytest -vv -x for debugging
-          pytest
+          pytest tests

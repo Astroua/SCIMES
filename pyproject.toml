@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="SCIMES"
+dynamic = ["version"]
+description="Spectral Clustering for Interstellar Molecular Emission Segmentation"
+readme = "README.md"
+authors = [
+    { name = "Dario Colombo", email = "dario.colombo222@gmail.com"},
+    { name = "Erik Rosolowsky"},
+    { name = "Adam Ginsburg"},
+    { name = "Ana Duarte-Cabral"},
+    { name = "Annie Hughes"},
+]
+maintainers = [
+    { name = "Dario Colombo", email = "dario.colombo222@gmail.com"},
+]
+# license = "BSD"
+# license-files = ["licences/LICENCE.rst"]
+keywords = [
+]
+classifiers=[
+]
+
+requires-python = ">=3.11"
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "astropy",
+    "scikit-learn",
+    "tqdm",
+    "pytest",
+]
+
+[project.urls]
+Homepage = "http://scimes.readthedocs.org/"
+Repository = "https://github.com/Astroua/SCIMES"
+
+[tool.setuptools.packages.find]
+where = ["src"]

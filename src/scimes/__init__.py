@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from .scimes import *
+
 __version__ = "0.3.2"
 
 """

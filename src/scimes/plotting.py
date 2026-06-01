@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import itertools
 
 def dendroplot_clusters(clusters,
                         dend,
