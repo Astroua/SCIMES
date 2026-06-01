@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        py-version:
+          - '3.11' # Oldest supported
+          - '3.14' # Latest stable
+    name: Python ${{ matrix.py-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Use Python ${{ matrix.py-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.py-version }}
+          architecture: x64
+
+      - name: Install SCIMES
+        run: |
+          pip install -r pip-requirements
+          pip install .
+
+      - name: Run tests
+        run: |
+          # use pytest -vv -x for debugging
+          pytest tests
